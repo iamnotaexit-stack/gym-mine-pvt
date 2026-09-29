@@ -13,6 +13,7 @@ export default function MemberDashboard() {
   const [loading, setLoading] = useState(true);
 
   const [settings, setSettings] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'profile' | 'receipts' | 'community'>('profile');
 
   useEffect(() => {
     if (user?.email) {
@@ -66,8 +67,6 @@ export default function MemberDashboard() {
       </div>
     );
   }
-
-  const [activeTab, setActiveTab] = useState<'profile' | 'receipts' | 'community'>('profile');
 
   // Simple print function for a specific receipt
   const printReceipt = (p: Payment) => {
