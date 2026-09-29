@@ -82,41 +82,36 @@ export default function MemberDashboard() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Welcome, {member.name}!</h1>
+    <div className="max-w-3xl mx-auto space-y-6">
+      <h1 className="text-3xl font-black text-gray-900 uppercase tracking-tight mb-8">Member Portal</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* 1. Personal Info Section */}
+      <div className="bg-white p-6 rounded-lg border-t-4 border-t-red-600 shadow-md">
+        <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Personal Info</h2>
         
-        {/* ID / QR Card */}
-        <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm flex flex-col items-center text-center">
-          <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-6">Digital Gym ID</h2>
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 mb-6 inline-block">
-            <QRCodeSVG value={qrPayload} size={160} level="M" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <div className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Name</div>
+            <div className="text-xl font-bold text-gray-900">{member.name}</div>
           </div>
-          <p className="text-xs text-gray-500">Scan at the front desk to check in.</p>
-        </div>
-
-        {/* Status Card */}
-        <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm md:col-span-2 space-y-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Membership Status</h2>
-              <div className="text-2xl font-bold text-gray-900">{member.plan?.name || 'No Plan'}</div>
-            </div>
-            <span className={`px-3 py-1 text-sm font-bold rounded-full uppercase ${getStatusColor(member.status)}`}>
-              {member.status?.replace('_', ' ')}
-            </span>
+          <div>
+            <div className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Membership Plan</div>
+            <div className="text-lg font-bold text-red-600">{member.plan?.name || 'No Plan'}</div>
           </div>
-
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
-            <div>
-              <div className="text-sm text-gray-500 mb-1 flex items-center gap-1"><Calendar size={14} /> Next Due Date</div>
-              <div className="font-bold text-lg text-red-600">{member.current_due_date}</div>
+          
+          <div className="pt-4 border-t border-gray-100">
+            <div className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1 flex items-center gap-1">
+              <Calendar size={14} /> Next Due Date
             </div>
-            <div>
-              <div className="text-sm text-gray-500 mb-1 flex items-center gap-1"><Smartphone size={14} /> Phone</div>
-              <div className="font-medium text-gray-900">{member.phone}</div>
+            <div className="font-bold text-gray-900">{member.current_due_date}</div>
+          </div>
+          
+          <div className="pt-4 border-t border-gray-100">
+            <div className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1 flex items-center gap-1">
+              <Smartphone size={14} /> Phone Number
             </div>
+            <div className="font-medium text-gray-900">{member.phone}</div>
+          </div>
             {member.has_trainer && member.trainer_name && (
               <div className="col-span-2 pt-2 border-t border-gray-50">
                 <div className="text-sm text-gray-500 mb-1 font-bold">Personal Trainer</div>
@@ -127,55 +122,56 @@ export default function MemberDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Payment History */}
-        <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm">
-          <h2 className="text-lg font-bold mb-4 flex items-center gap-2"><CreditCard size={20} /> Payment History</h2>
-          {payments.length === 0 ? (
-            <p className="text-gray-500 text-sm">No payments recorded yet.</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-gray-50 border-y border-gray-100">
-                    <th className="p-3 font-semibold text-gray-600 text-sm">Date</th>
-                    <th className="p-3 font-semibold text-gray-600 text-sm">Amount</th>
-                    <th className="p-3 font-semibold text-gray-600 text-sm">Period Covered</th>
+      {/* 2. Payment History Section */}
+      <div className="bg-white p-6 rounded-lg border-t-4 border-t-red-600 shadow-md">
+        <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+          <CreditCard size={18} /> Payment Receipts
+        </h2>
+        
+        {payments.length === 0 ? (
+          <p className="text-gray-500 text-sm font-medium">No payments recorded yet.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-50 border-y border-gray-200">
+                  <th className="p-3 font-bold text-gray-900 text-xs uppercase tracking-wider">Date</th>
+                  <th className="p-3 font-bold text-gray-900 text-xs uppercase tracking-wider">Amount</th>
+                  <th className="p-3 font-bold text-gray-900 text-xs uppercase tracking-wider">Period Covered</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.map(p => (
+                  <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                    <td className="p-3 text-sm font-medium">{p.paid_on}</td>
+                    <td className="p-3 text-sm font-black text-green-700 bg-green-50">₹{p.amount}</td>
+                    <td className="p-3 text-sm text-gray-600">{p.covers_from} to {p.covers_to}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {payments.map(p => (
-                    <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="p-3 text-sm">{p.paid_on}</td>
-                      <td className="p-3 text-sm font-bold text-gray-900">₹{p.amount}</td>
-                      <td className="p-3 text-sm text-gray-600">{p.covers_from} to {p.covers_to}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
-        {/* WhatsApp Group QR */}
-        <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm flex flex-col items-center text-center justify-center">
-          <h2 className="text-lg font-bold mb-4 flex items-center gap-2">WhatsApp Community</h2>
-          <p className="text-sm text-gray-600 mb-6">Scan this code to join our official gym WhatsApp group for updates and announcements.</p>
-          
-          {(member.has_trainer ? settings?.group_url_trainer : settings?.group_url_general) ? (
-            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 inline-block">
-              <QRCodeSVG 
-                value={member.has_trainer ? settings?.group_url_trainer : settings?.group_url_general} 
-                size={160} 
-                level="M" 
-              />
-            </div>
-          ) : (
-            <div className="text-gray-400 text-sm italic border border-dashed border-gray-200 p-8 rounded-lg w-full">
-              No WhatsApp group URL configured.
-            </div>
-          )}
-        </div>
+      {/* 3. WhatsApp Group Joining Link/QR */}
+      <div className="bg-white p-6 rounded-lg border-t-4 border-t-red-600 shadow-md flex flex-col items-center text-center justify-center">
+        <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2">WhatsApp Community</h2>
+        <p className="text-sm text-gray-600 mb-6 font-medium">Scan this code to join our official gym WhatsApp group.</p>
+        
+        {(member.has_trainer ? settings?.group_url_trainer : settings?.group_url_general) ? (
+          <div className="bg-white p-2 rounded-lg shadow-sm border border-gray-200 inline-block">
+            <QRCodeSVG 
+              value={member.has_trainer ? settings?.group_url_trainer : settings?.group_url_general} 
+              size={180} 
+              level="H" 
+            />
+          </div>
+        ) : (
+          <div className="text-gray-400 text-xs uppercase tracking-widest font-bold">
+            No WhatsApp Group Configured
+          </div>
+        )}
       </div>
     </div>
   );
