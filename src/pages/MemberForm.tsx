@@ -313,18 +313,25 @@ export default function MemberForm() {
           </div>
 
           <div className="space-y-1 sm:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 ">Plan *</label>
-            <select 
-              required
-              value={form.plan_id} 
-              onChange={e => setForm({...form, plan_id: e.target.value})}
-              className="w-full px-4 py-3 sm:py-2 rounded-lg border border-red-300 focus:ring-2 focus:ring-red-500 min-h-[44px] bg-white appearance-none"
-            >
-              <option value="" disabled>Select a plan...</option>
-              {plans.map(p => (
-                <option key={p.id} value={p.id}>{p.name} (₹{p.price} for {p.months}m)</option>
-              ))}
-            </select>
+            <label className="block text-sm font-medium text-gray-700">Plan *</label>
+            {plans.length === 0 ? (
+              <div className="w-full px-4 py-3 bg-red-50 text-red-600 rounded-lg border border-red-200 text-sm flex items-center justify-between">
+                <span>No plans found. You must create one first.</span>
+                <Link to="/settings" className="font-bold underline hover:text-red-700">Go to Settings</Link>
+              </div>
+            ) : (
+              <select 
+                required
+                value={form.plan_id} 
+                onChange={e => setForm({...form, plan_id: e.target.value})}
+                className="w-full px-4 py-3 sm:py-2 rounded-lg border border-red-300 focus:ring-2 focus:ring-red-500 min-h-[44px] bg-white appearance-none"
+              >
+                <option value="" disabled>Select a plan...</option>
+                {plans.map(p => (
+                  <option key={p.id} value={p.id}>{p.name} (₹{p.price} for {p.months}m)</option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div className="space-y-4 sm:col-span-2">

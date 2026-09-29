@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LogOut, Users, Settings as SettingsIcon, Trash2, ListChecks, BarChart2, History, Moon, Sun } from 'lucide-react';
 import React, { Suspense, useState, useEffect } from 'react';
