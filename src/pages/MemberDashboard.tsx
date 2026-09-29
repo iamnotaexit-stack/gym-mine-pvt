@@ -112,13 +112,13 @@ export default function MemberDashboard() {
             </div>
             <div className="font-medium text-gray-900">{member.phone}</div>
           </div>
-            {member.has_trainer && member.trainer_name && (
-              <div className="col-span-2 pt-2 border-t border-gray-50">
-                <div className="text-sm text-gray-500 mb-1 font-bold">Personal Trainer</div>
-                <div className="font-medium text-gray-900">{member.trainer_name}</div>
-              </div>
-            )}
-          </div>
+
+          {member.has_trainer && member.trainer_name && (
+            <div className="sm:col-span-2 pt-4 border-t border-gray-100">
+              <div className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Personal Trainer</div>
+              <div className="font-medium text-gray-900">{member.trainer_name}</div>
+            </div>
+          )}
         </div>
       </div>
 
