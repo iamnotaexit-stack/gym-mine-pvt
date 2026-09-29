@@ -155,7 +155,7 @@ export default function MemberForm() {
     
     const handleSendWelcome = () => {
       const phone = form.phone.replace('+', '');
-      const msg = encodeURIComponent(`Hi ${createdName}, welcome to FitPro!\n\nYou can view your membership, payments, and ID here:\nhttps://fitpro.app/portal/magic-link-demo\n\nSee you at the gym!`);
+      const msg = encodeURIComponent(`Hi ${createdName}, welcome to FitPro!\n\nYou can view your membership, payments, and ID here:\nyour live Vercel website\n\nSee you at the gym!`);
       window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     };
 
