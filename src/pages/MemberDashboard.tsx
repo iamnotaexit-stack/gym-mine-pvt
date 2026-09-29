@@ -27,7 +27,9 @@ export default function MemberDashboard() {
       .select('*, plan:plans(*)')
       .eq('email', email)
       .is('deleted_at', null)
-      .single();
+      .order('join_date', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (memberData) {
       const { data: settingsData } = await supabase.from('settings').select('*').single();
