@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Calendar, CreditCard, FileText, Smartphone } from 'lucide-react';
-import { computeMemberStatus, getCurrentISTDateString } from '../lib/dates';
+import { computeMemberStatus } from '../lib/dates';
 import type { Member, Payment } from '../types';
 import { QRCodeSVG } from 'qrcode.react';
 

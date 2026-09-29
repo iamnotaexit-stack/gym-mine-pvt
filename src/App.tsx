@@ -1,7 +1,7 @@
 import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { LogOut, Users, Settings as SettingsIcon, Trash2, ListChecks, BarChart2, History, Moon, Sun } from 'lucide-react';
-import React, { Suspense, useState, useEffect } from 'react';
+import { LogOut, Users, Settings as SettingsIcon, Trash2, ListChecks, BarChart2, History } from 'lucide-react';
+import React, { Suspense, useState } from 'react';
 import Members from './pages/Members';
 
 // Code split other routes to keep main bundle tiny

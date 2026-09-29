@@ -20,10 +20,10 @@ export const mockMembers: Member[] = [
     has_trainer: true,
     trainer_name: 'Alex Coach',
     notes: 'Prefers morning sessions',
-    created_at: '2026-08-15T10:00:00Z',
-    updated_at: '2026-08-15T10:00:00Z',
-    deleted_at: null,
-    plan: { id: 'plan-1', name: '3 Months Pro', months: 3, price: 2500, created_at: '' }
+    
+    
+    deleted_at: null, created_by: 'system',
+    plan: { id: 'plan-1', name: '3 Months Pro', months: 3, price: 2500 }
   },
   {
     id: '2',
@@ -38,10 +38,10 @@ export const mockMembers: Member[] = [
     has_trainer: false,
     trainer_name: null,
     notes: '',
-    created_at: '2026-07-01T10:00:00Z',
-    updated_at: '2026-07-01T10:00:00Z',
-    deleted_at: null,
-    plan: { id: 'plan-2', name: '1 Month Basic', months: 1, price: 1000, created_at: '' }
+    
+    
+    deleted_at: null, created_by: 'system',
+    plan: { id: 'plan-2', name: '1 Month Basic', months: 1, price: 1000 }
   },
   {
     id: '3',
@@ -56,10 +56,10 @@ export const mockMembers: Member[] = [
     has_trainer: false,
     trainer_name: null,
     notes: '',
-    created_at: '2026-09-10T10:00:00Z',
-    updated_at: '2026-09-10T10:00:00Z',
-    deleted_at: null,
-    plan: { id: 'plan-1', name: '3 Months Pro', months: 3, price: 2500, created_at: '' }
+    
+    
+    deleted_at: null, created_by: 'system',
+    plan: { id: 'plan-1', name: '3 Months Pro', months: 3, price: 2500 }
   },
   {
     id: '4',
@@ -74,10 +74,10 @@ export const mockMembers: Member[] = [
     has_trainer: true,
     trainer_name: 'Sarah Coach',
     notes: 'Currently traveling',
-    created_at: '2026-01-20T10:00:00Z',
-    updated_at: '2026-01-20T10:00:00Z',
-    deleted_at: null,
-    plan: { id: 'plan-3', name: '1 Year Elite', months: 12, price: 8000, created_at: '' }
+    
+    
+    deleted_at: null, created_by: 'system',
+    plan: { id: 'plan-3', name: '1 Year Elite', months: 12, price: 8000 }
   },
   {
     id: '5',
@@ -92,10 +92,10 @@ export const mockMembers: Member[] = [
     has_trainer: true,
     trainer_name: 'Alex Coach',
     notes: '',
-    created_at: '2026-09-28T10:00:00Z',
-    updated_at: '2026-09-28T10:00:00Z',
-    deleted_at: null,
-    plan: { id: 'plan-2', name: '1 Month Basic', months: 1, price: 1000, created_at: '' }
+    
+    
+    deleted_at: null, created_by: 'system',
+    plan: { id: 'plan-2', name: '1 Month Basic', months: 1, price: 1000 }
   }
 ];
 
@@ -110,7 +110,7 @@ export const mockPayments: Payment[] = [
     covers_from: '2026-08-15',
     covers_to: '2026-10-15',
     note: null,
-    created_at: '2026-08-15T10:00:00Z'
+    created_by: 'system-08-15T10:00:00Z'
   },
   {
     id: 'pay-2',
@@ -122,6 +122,6 @@ export const mockPayments: Payment[] = [
     covers_from: '2026-09-28',
     covers_to: '2026-10-28',
     note: null,
-    created_at: '2026-09-28T10:00:00Z'
+    created_by: 'system-09-28T10:00:00Z'
   }
 ];

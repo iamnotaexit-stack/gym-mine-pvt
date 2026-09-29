@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import type { Payment, Member } from '../types';
+import type { Payment } from '../types';
 import { Printer, ArrowLeft } from 'lucide-react';
 
 interface ReceiptData extends Payment {
-  member: Member & { plan: { name: string } };
+  member: any;
 }
 
 export default function Receipt() {
@@ -32,7 +32,7 @@ export default function Receipt() {
           covers_from: '2026-09-29',
           covers_to: '2026-10-29',
           note: null,
-          created_at: '2026-09-29T10:00:00Z',
+          created_by: '2026-09-29T10:00:00Z',
           member: {
             id: '1',
             name: 'Rahul Sharma',
@@ -46,7 +46,7 @@ export default function Receipt() {
             has_trainer: true,
             trainer_name: 'Alex Coach',
             notes: '',
-            created_at: '',
+            created_by: '',
             updated_at: '',
             deleted_at: null,
             plan: { name: '1 Month Standard' }
