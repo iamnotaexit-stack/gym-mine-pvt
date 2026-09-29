@@ -150,6 +150,17 @@ export default function MemberForm() {
             meta: { name: payload.name }
           });
         }
+
+        // If email exists, invite them via Edge Function
+        if (payload.email) {
+          try {
+            await supabase.functions.invoke('invite-member', {
+              body: { email: payload.email, name: payload.name }
+            });
+          } catch (err) {
+            console.error("Failed to invoke invite-member function", err);
+          }
+        }
         
         // Fetch URL for QR
         const { data: settings } = await supabase.from('settings').select('group_url_general, group_url_trainer').single();
