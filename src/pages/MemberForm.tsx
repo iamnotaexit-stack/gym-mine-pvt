@@ -2,17 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Plan } from '../types';
-import { ArrowLeft, Save, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Save, MessageCircle, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { calculateNextDueDate } from '../lib/dates';
 
 export default function MemberForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = Boolean(id);
 
-  const [loading, setLoading] = useState(false);
-  const [plans, setPlans] = useState<Plan[]>([]);
-  
   const [form, setForm] = useState({
     name: '',
     phone: '+91',
@@ -23,10 +21,16 @@ export default function MemberForm() {
     trainer_name: '',
     notes: ''
   });
-
+  
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [loading, setLoading] = useState(false);
   const [showQR, setShowQR] = useState(false);
-  const [createdName, setCreatedName] = useState('');
   const [groupUrl, setGroupUrl] = useState<string | null>(null);
+  const [createdName, setCreatedName] = useState('');
+
+  // Initial Payment States (New Member Only)
+  const [logInitialPayment, setLogInitialPayment] = useState(true);
+  const [admissionFee, setAdmissionFee] = useState(500);
 
   useEffect(() => {
     fetchPlans();
@@ -36,49 +40,16 @@ export default function MemberForm() {
   }, [id]);
 
   const fetchPlans = async () => {
-    if (import.meta.env.VITE_SUPABASE_URL === undefined) {
-      const mockPlans = [
-        { id: 'plan-1', name: '1 Month Standard', months: 1, price: 1500, created_at: '' },
-        { id: 'plan-2', name: '3 Months Pro', months: 3, price: 4000, created_at: '' },
-        { id: 'plan-3', name: '1 Year Elite', months: 12, price: 12000, created_at: '' },
-      ];
-      setPlans(mockPlans);
-      if (!isEditing && !form.plan_id) {
-        setForm(f => ({ ...f, plan_id: mockPlans[0].id }));
-      }
-      return;
-    }
-
-    const { data } = await supabase.from('plans').select('*').order('months');
+    const { data } = await supabase.from('plans').select('*');
     if (data) {
       setPlans(data);
-      if (!isEditing && data.length > 0 && !form.plan_id) {
+      if (!isEditing && data.length > 0) {
         setForm(f => ({ ...f, plan_id: data[0].id }));
       }
     }
   };
 
   const fetchMember = async () => {
-    if (!id) return;
-    
-    if (import.meta.env.VITE_SUPABASE_URL === undefined) {
-      const { mockMembers } = await import('../lib/mockData');
-      const m = mockMembers.find(x => x.id === id);
-      if (m) {
-        setForm({
-          name: m.name,
-          phone: m.phone,
-          email: m.email || '',
-          join_date: m.join_date,
-          plan_id: m.plan_id,
-          has_trainer: m.has_trainer,
-          trainer_name: m.trainer_name || '',
-          notes: m.notes || ''
-        });
-      }
-      return;
-    }
-
     const { data } = await supabase.from('members').select('*').eq('id', id).single();
     if (data) {
       setForm({
@@ -98,47 +69,52 @@ export default function MemberForm() {
     e.preventDefault();
     setLoading(true);
 
-    let normalizedPhone = form.phone.replace(/\s+/g, '');
-    if (!normalizedPhone.startsWith('+')) {
-      if (normalizedPhone.length === 10) normalizedPhone = '+91' + normalizedPhone;
+    const anchor_day = parseInt(form.join_date.split('-')[2], 10);
+    const selectedPlan = plans.find(p => p.id === form.plan_id);
+    
+    // If logging initial payment, calculate the real next due date
+    let current_due_date = form.join_date;
+    if (!isEditing && logInitialPayment && selectedPlan) {
+       current_due_date = calculateNextDueDate(anchor_day, form.join_date, selectedPlan.months);
     }
 
     const payload = {
       name: form.name,
-      phone: normalizedPhone,
+      phone: form.phone,
       email: form.email || null,
       join_date: form.join_date,
-      current_due_date: form.join_date,
-      anchor_day: Math.min(31, parseInt(form.join_date.split('-')[2], 10)),
+      anchor_day,
       plan_id: form.plan_id,
-      is_frozen: false,
+      current_due_date,
       has_trainer: form.has_trainer,
       trainer_name: form.has_trainer ? form.trainer_name : null,
       notes: form.notes || null,
     };
 
-    if (import.meta.env.VITE_SUPABASE_URL === undefined) {
-      // Mock save
-      setTimeout(() => {
-        if (isEditing) {
-          navigate(`/members/${id}`);
-        } else {
-          setCreatedName(form.name);
-          setGroupUrl("https://chat.whatsapp.com/mock-invite-link");
-          setShowQR(true);
-        }
-        setLoading(false);
-      }, 500);
-      return;
-    }
-
     if (isEditing) {
-      const { error } = await supabase.from('members').update(payload).eq('id', id);
+      // Dont update current_due_date on edit unless we are explicitly changing their cycle, which is risky
+      const { current_due_date: _discard, ...editPayload } = payload;
+      const { error } = await supabase.from('members').update(editPayload).eq('id', id);
       setLoading(false);
       if (!error) navigate(`/members/${id}`);
     } else {
-      const { error } = await supabase.from('members').insert(payload);
-      if (!error) {
+      const { data: insertedMember, error } = await supabase.from('members').insert(payload).select().single();
+      
+      if (!error && insertedMember) {
+        // Log Initial Payment if selected
+        if (logInitialPayment && selectedPlan) {
+          await supabase.from('payments').insert({
+            member_id: insertedMember.id,
+            amount: selectedPlan.price + admissionFee,
+            trainer_fee: 0,
+            method: 'cash',
+            paid_on: form.join_date,
+            covers_from: form.join_date,
+            covers_to: current_due_date,
+            note: `Initial Payment (Plan: ₹${selectedPlan.price}, Admission: ₹${admissionFee})`
+          });
+        }
+
         // Log activity
         const { data: user } = await supabase.auth.getUser();
         if (user.user) {
@@ -146,7 +122,7 @@ export default function MemberForm() {
             actor: user.user.id,
             action: 'create_member',
             entity: 'members',
-            entity_id: '00000000-0000-0000-0000-000000000000', 
+            entity_id: insertedMember.id, 
             meta: { name: payload.name }
           });
         }
@@ -238,7 +214,7 @@ export default function MemberForm() {
                 onClick={handleDownloadQR}
                 className="w-full bg-white text-gray-700 py-2 px-4 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition-colors text-sm"
               >
-                Download QR Code
+                <Download size={16} className="inline mr-2"/> Download QR Code
               </button>
             </div>
           ) : (
@@ -258,57 +234,59 @@ export default function MemberForm() {
     );
   }
 
+  const selectedPlanPrice = plans.find(p => p.id === form.plan_id)?.price || 0;
+
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto pb-12">
       <div className="flex items-center gap-4 mb-6">
-        <Link to="/" className="p-2 hover:bg-gray-100  rounded-full transition-colors">
-          <ArrowLeft size={24} className="text-gray-600 " />
+        <Link to="/" className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+          <ArrowLeft size={24} className="text-gray-600" />
         </Link>
         <h1 className="text-2xl font-bold">{isEditing ? 'Edit Member' : 'Add Member'}</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white  p-6 rounded-xl shadow-sm border border-red-200  space-y-6">
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-sm border border-red-200 space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700 ">Full Name *</label>
+            <label className="block text-sm font-medium text-gray-700">Full Name *</label>
             <input 
               required 
               type="text" 
               value={form.name} 
               onChange={e => setForm({...form, name: e.target.value})}
-              className="w-full px-4 py-3 sm:py-2 rounded-lg border border-red-300  focus:ring-2 focus:ring-red-500 min-h-[44px]"
+              className="w-full px-4 py-3 sm:py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 min-h-[44px]"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700 ">Phone *</label>
+            <label className="block text-sm font-medium text-gray-700">Phone *</label>
             <input 
               required 
               type="tel" 
               value={form.phone} 
               onChange={e => setForm({...form, phone: e.target.value})}
-              className="w-full px-4 py-3 sm:py-2 rounded-lg border border-red-300  focus:ring-2 focus:ring-red-500 min-h-[44px]"
+              className="w-full px-4 py-3 sm:py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 min-h-[44px]"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700 ">Email (Optional)</label>
+            <label className="block text-sm font-medium text-gray-700">Email (Optional)</label>
             <input 
               type="email" 
               value={form.email} 
               onChange={e => setForm({...form, email: e.target.value})}
-              className="w-full px-4 py-3 sm:py-2 rounded-lg border border-red-300  focus:ring-2 focus:ring-red-500 min-h-[44px]"
+              className="w-full px-4 py-3 sm:py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 min-h-[44px]"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700 ">Join Date *</label>
+            <label className="block text-sm font-medium text-gray-700">Join Date *</label>
             <input 
               required 
               type="date" 
               value={form.join_date} 
               onChange={e => setForm({...form, join_date: e.target.value})}
-              className="w-full px-4 py-3 sm:py-2 rounded-lg border border-red-300  focus:ring-2 focus:ring-red-500 min-h-[44px]"
+              className="w-full px-4 py-3 sm:py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 min-h-[44px]"
             />
           </div>
 
@@ -324,7 +302,7 @@ export default function MemberForm() {
                 required
                 value={form.plan_id} 
                 onChange={e => setForm({...form, plan_id: e.target.value})}
-                className="w-full px-4 py-3 sm:py-2 rounded-lg border border-red-300 focus:ring-2 focus:ring-red-500 min-h-[44px] bg-white appearance-none"
+                className="w-full px-4 py-3 sm:py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 min-h-[44px] bg-white appearance-none"
               >
                 <option value="" disabled>Select a plan...</option>
                 {plans.map(p => (
@@ -334,43 +312,78 @@ export default function MemberForm() {
             )}
           </div>
 
-          <div className="space-y-4 sm:col-span-2">
+          {!isEditing && plans.length > 0 && (
+            <div className="sm:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  checked={logInitialPayment}
+                  onChange={e => setLogInitialPayment(e.target.checked)}
+                  className="w-5 h-5 sm:w-4 sm:h-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
+                />
+                <span className="text-gray-900 font-medium select-none">Record Initial Payment Now?</span>
+              </label>
+
+              {logInitialPayment && (
+                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-gray-200">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Admission Fee (₹)</label>
+                    <input 
+                      type="number" 
+                      min="0"
+                      value={admissionFee}
+                      onChange={e => setAdmissionFee(parseInt(e.target.value) || 0)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Total Collecting Today</label>
+                    <div className="px-4 py-2 rounded-lg border border-green-200 bg-green-50 text-green-800 font-bold">
+                      ₹{selectedPlanPrice + admissionFee}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="space-y-4 sm:col-span-2 border-t border-gray-100 pt-4">
             <label className="flex items-center gap-3 cursor-pointer">
               <input 
                 type="checkbox" 
                 checked={form.has_trainer}
                 onChange={e => setForm({...form, has_trainer: e.target.checked})}
-                className="w-5 h-5 sm:w-4 sm:h-4 text-red-600 rounded border-red-300  focus:ring-red-500"
+                className="w-5 h-5 sm:w-4 sm:h-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
               />
-              <span className="text-gray-900  font-medium select-none">Has Personal Trainer?</span>
+              <span className="text-gray-900 font-medium select-none">Has Personal Trainer?</span>
             </label>
 
             {form.has_trainer && (
               <div className="space-y-1 pl-8">
-                <label className="block text-sm font-medium text-gray-700 ">Trainer Name *</label>
+                <label className="block text-sm font-medium text-gray-700">Trainer Name *</label>
                 <input 
                   required={form.has_trainer}
                   type="text" 
                   value={form.trainer_name} 
                   onChange={e => setForm({...form, trainer_name: e.target.value})}
-                  className="w-full px-4 py-3 sm:py-2 rounded-lg border border-red-300  focus:ring-2 focus:ring-red-500 min-h-[44px]"
+                  className="w-full px-4 py-3 sm:py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 min-h-[44px]"
                 />
               </div>
             )}
           </div>
 
           <div className="space-y-1 sm:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 ">Notes</label>
+            <label className="block text-sm font-medium text-gray-700">Notes</label>
             <textarea 
               rows={3}
               value={form.notes} 
               onChange={e => setForm({...form, notes: e.target.value})}
-              className="w-full px-4 py-3 sm:py-2 rounded-lg border border-red-300  focus:ring-2 focus:ring-red-500"
+              className="w-full px-4 py-3 sm:py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500"
             />
           </div>
         </div>
 
-        <div className="pt-4 border-t border-red-100  flex justify-end">
+        <div className="pt-4 border-t border-red-100 flex justify-end">
           <button 
             type="submit" 
             disabled={loading}
