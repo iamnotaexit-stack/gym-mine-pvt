@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 interface AuthContextType {
   session: Session | null;
   user: User | null;
-  role: 'owner' | 'subadmin' | null;
+  role: 'owner' | 'subadmin' | 'member' | null;
   loading: boolean;
   signOut: () => Promise<void>;
 }
@@ -21,7 +21,7 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<'owner' | 'subadmin' | null>(null);
+  const [role, setRole] = useState<'owner' | 'subadmin' | 'member' | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchRole = async (userId: string) => {

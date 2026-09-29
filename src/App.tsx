@@ -37,12 +37,16 @@ function Layout({ children }: { children: React.ReactNode }) {
         
         {/* Desktop Nav Rail / Sidebar */}
         <nav className="hidden sm:flex flex-col gap-2 flex-1">
-          <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-50">
-            <Users size={20} /> <span className="hidden md:inline font-medium">Members</span>
-          </Link>
-          <Link to="/chase" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-50">
-            <ListChecks size={20} /> <span className="hidden md:inline font-medium">Chase List</span>
-          </Link>
+          {role !== 'member' && (
+            <>
+              <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-50">
+                <Users size={20} /> <span className="hidden md:inline font-medium">Members</span>
+              </Link>
+              <Link to="/chase" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-50">
+                <ListChecks size={20} /> <span className="hidden md:inline font-medium">Chase List</span>
+              </Link>
+            </>
+          )}
           {role === 'owner' && (
             <>
               <Link to="/stats" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-50">
@@ -70,22 +74,26 @@ function Layout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Mobile Bottom Tab Bar */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-white  border-t border-red-200  flex justify-around items-center h-16 z-10 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-        <Link to="/" className="flex flex-col items-center justify-center w-full h-full text-gray-500  hover:text-red-600">
-          <Users size={24} />
-          <span className="text-[10px] font-medium mt-1">Members</span>
-        </Link>
-        <Link to="/chase" className="flex flex-col items-center justify-center w-full h-full text-gray-500  hover:text-red-600">
-          <ListChecks size={24} />
-          <span className="text-[10px] font-medium mt-1">Chase</span>
-        </Link>
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-red-200 flex justify-around items-center h-16 z-10 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+        {role !== 'member' && (
+          <>
+            <Link to="/" className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-600">
+              <Users size={24} />
+              <span className="text-[10px] font-medium mt-1">Members</span>
+            </Link>
+            <Link to="/chase" className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-600">
+              <ListChecks size={24} />
+              <span className="text-[10px] font-medium mt-1">Chase</span>
+            </Link>
+          </>
+        )}
         {role === 'owner' && (
           <>
-            <Link to="/stats" className="flex flex-col items-center justify-center w-full h-full text-gray-500  hover:text-red-600">
+            <Link to="/stats" className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-600">
               <BarChart2 size={24} />
               <span className="text-[10px] font-medium mt-1">Stats</span>
             </Link>
-            <Link to="/settings" className="flex flex-col items-center justify-center w-full h-full text-gray-500  hover:text-red-600">
+            <Link to="/settings" className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-600">
               <SettingsIcon size={24} />
               <span className="text-[10px] font-medium mt-1">Settings</span>
             </Link>
@@ -104,19 +112,78 @@ function Layout({ children }: { children: React.ReactNode }) {
 
 function Login() {
   const { user } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   if (user) return <Navigate to="/" />;
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    const { supabase } = await import('./lib/supabase');
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50  p-4">
-      <div className="bg-white  p-8 rounded-xl shadow-lg w-full max-w-sm">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 ">FitPro Login</h2>
-        <p className="text-sm text-gray-600  mb-4 text-center">Authentication requires Supabase config.</p>
-        <button className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 min-h-[44px]">
-          Sign In
+      <form onSubmit={handleLogin} className="bg-white  p-8 rounded-xl shadow-lg w-full max-w-sm border border-red-100">
+        <div className="flex justify-center mb-6">
+          <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-sm">
+            FP
+          </div>
+        </div>
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">FitPro Login</h2>
+        
+        {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">{error}</div>}
+
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input 
+              required
+              type="email" 
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 min-h-[44px]"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input 
+              required
+              type="password" 
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 min-h-[44px]"
+            />
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          disabled={loading}
+          className="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 min-h-[44px] shadow-sm disabled:opacity-50"
+        >
+          {loading ? 'Signing in...' : 'Sign In'}
         </button>
-      </div>
+      </form>
     </div>
   );
+}
+
+const MemberDashboard = React.lazy(() => import('./pages/MemberDashboard'));
+
+function RootRoute() {
+  const { role } = useAuth();
+  if (role === 'member') return <MemberDashboard />;
+  return <Members />;
 }
 
 function App() {
@@ -125,7 +192,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<ProtectedRoute><Layout><Members /></Layout></ProtectedRoute>} />
+          <Route path="/" element={<ProtectedRoute><Layout><RootRoute /></Layout></ProtectedRoute>} />
           <Route path="/members/add" element={<ProtectedRoute><Layout><MemberForm /></Layout></ProtectedRoute>} />
           <Route path="/members/:id" element={<ProtectedRoute><Layout><MemberDetails /></Layout></ProtectedRoute>} />
           <Route path="/members/:id/edit" element={<ProtectedRoute><Layout><MemberForm /></Layout></ProtectedRoute>} />
