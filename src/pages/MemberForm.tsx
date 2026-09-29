@@ -331,15 +331,28 @@ export default function MemberForm() {
             <div className="sm:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4">
               <h3 className="font-bold text-gray-900 text-sm mb-2">Initial Payments (Optional)</h3>
               
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  checked={payAdmissionFee}
-                  onChange={e => setPayAdmissionFee(e.target.checked)}
-                  className="w-5 h-5 sm:w-4 sm:h-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
-                />
-                <span className="text-gray-900 font-medium select-none">Admission Fee Paid (₹{globalAdmissionFee})</span>
-              </label>
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-3 cursor-pointer flex-1">
+                  <input 
+                    type="checkbox" 
+                    checked={payAdmissionFee}
+                    onChange={e => setPayAdmissionFee(e.target.checked)}
+                    className="w-5 h-5 sm:w-4 sm:h-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
+                  />
+                  <span className="text-gray-900 font-medium select-none">Admission Fee Paid</span>
+                </label>
+                {payAdmissionFee && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-600">₹</span>
+                    <input 
+                      type="number"
+                      value={globalAdmissionFee}
+                      onChange={e => setGlobalAdmissionFee(parseInt(e.target.value) || 0)}
+                      className="w-24 px-2 py-1 rounded border border-gray-300 focus:ring-2 focus:ring-red-500 text-sm"
+                    />
+                  </div>
+                )}
+              </div>
 
               <label className="flex items-center gap-3 cursor-pointer">
                 <input 
