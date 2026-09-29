@@ -32,7 +32,7 @@ function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col sm:flex-row bg-white pb-16 sm:pb-0">
       <header className="bg-red-700 text-white p-4 flex sm:flex-col justify-between sm:justify-start items-center sm:items-stretch shadow-md sm:w-64 sm:h-screen sm:sticky top-0 z-10 shrink-0">
         <div className="flex justify-between w-full items-center sm:mb-8">
-          <h1 className="font-bold text-xl sm:text-2xl text-center sm:text-left">FitPro</h1>
+          <h1 className="font-bold text-xl sm:text-2xl text-center sm:text-left">Gym Addict 2.0</h1>
         </div>
         
         {/* Desktop Nav Rail / Sidebar */}
@@ -152,7 +152,7 @@ function Login() {
             FP
           </div>
         </div>
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">FitPro Login</h2>
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">Gym Addict 2.0 Login</h2>
         
         {/* Tabs */}
         <div className="flex rounded-lg bg-gray-100 p-1 mb-6">

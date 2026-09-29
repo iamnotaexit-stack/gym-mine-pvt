@@ -171,7 +171,7 @@ export default function MemberForm() {
     const handleSendWelcome = () => {
       const phone = form.phone.replace('+', '');
       const loginUrl = window.location.origin + '/#/login';
-      const msg = encodeURIComponent(`Hi ${createdName}, welcome to FitPro!\n\nYou can view your membership, payments, and ID here:\n${loginUrl}\n\nSee you at the gym!`);
+      const msg = encodeURIComponent(`Hi ${createdName}, welcome to Gym Addict 2.0!\n\nYou can view your membership, payments, and ID here:\n${loginUrl}\n\nSee you at the gym!`);
       window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     };
 
@@ -187,7 +187,7 @@ export default function MemberForm() {
         canvas.height = img.height;
         ctx?.drawImage(img, 0, 0);
         const a = document.createElement("a");
-        a.download = "FitPro-Group-QR.png";
+        a.download = "Gym Addict 2.0-Group-QR.png";
         a.href = canvas.toDataURL("image/png");
         a.click();
       };

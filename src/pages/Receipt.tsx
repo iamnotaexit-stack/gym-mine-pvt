@@ -11,7 +11,7 @@ interface ReceiptData extends Payment {
 export default function Receipt() {
   const { id } = useParams();
   const [data, setData] = useState<ReceiptData | null>(null);
-  const [gymName, setGymName] = useState('FitPro Gym');
+  const [gymName, setGymName] = useState('Gym Addict 2.0');
 
   useEffect(() => {
     fetchData();

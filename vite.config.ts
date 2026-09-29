@@ -11,8 +11,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'FitPro Gym',
-        short_name: 'FitPro',
+        name: 'Gym Addict 2.0 Gym',
+        short_name: 'Gym Addict 2.0',
         theme_color: '#4f46e5',
         icons: [
           {

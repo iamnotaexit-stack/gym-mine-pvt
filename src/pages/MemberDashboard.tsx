@@ -89,7 +89,7 @@ export default function MemberDashboard() {
         </head>
         <body>
           <div class="header">
-            <h1>FitPro Gym</h1>
+            <h1>Gym Addict 2.0</h1>
             <p style="color: #666; margin: 0;">Payment Receipt</p>
           </div>
           <div class="row">
