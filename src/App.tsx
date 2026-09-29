@@ -129,7 +129,7 @@ function Login() {
     const { supabase } = await import('./lib/supabase');
     
     if (isMagicLink) {
-      const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+      const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false, emailRedirectTo: window.location.origin } });
       if (error) {
         setError(error.message);
       } else {

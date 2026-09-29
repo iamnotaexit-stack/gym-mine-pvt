@@ -146,7 +146,7 @@ export default function MemberForm() {
         if (payload.email) {
           try {
             await supabase.functions.invoke('invite-member', {
-              body: { email: payload.email, name: payload.name }
+              body: { email: payload.email, name: payload.name, redirectTo: window.location.origin }
             });
           } catch (err) {
             console.error("Failed to invoke invite-member function", err);

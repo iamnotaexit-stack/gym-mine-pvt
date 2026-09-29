@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { email, name } = await req.json()
+    const { email, name, redirectTo } = await req.json()
 
     if (!email) {
       throw new Error("Email is required")
@@ -24,7 +24,9 @@ serve(async (req) => {
     )
 
     // 1. Send Magic Invite Link
-    const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email)
+    const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+      redirectTo: redirectTo || undefined
+    })
     
     if (error) {
       throw error
