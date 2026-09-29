@@ -67,20 +67,6 @@ export default function MemberDashboard() {
     );
   }
 
-  // QR Code payload (could be used by owner to scan member in)
-  const qrPayload = JSON.stringify({ id: member.id, name: member.name });
-
-  const getStatusColor = (status: string | undefined) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'due_soon': return 'bg-yellow-100 text-yellow-800';
-      case 'due': return 'bg-orange-100 text-orange-800';
-      case 'overdue': return 'bg-red-100 text-red-800';
-      case 'frozen': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <h1 className="text-3xl font-black text-gray-900 uppercase tracking-tight mb-8">Member Portal</h1>
