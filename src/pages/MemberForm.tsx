@@ -195,56 +195,47 @@ export default function MemberForm() {
     };
 
     return (
-      <div className="bg-white p-8 rounded-xl shadow-xl border border-red-200 text-center max-w-md mx-auto mt-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Member Added!</h2>
-        <p className="text-gray-600 mb-8"><strong>{createdName}</strong> has been successfully registered.</p>
+      <div className="bg-white p-8 rounded-lg shadow-2xl border-t-4 border-t-red-600 text-center max-w-sm mx-auto mt-12 animate-in fade-in zoom-in-95 duration-300">
+        <h2 className="text-3xl font-black text-gray-900 mb-2 uppercase tracking-tight">Success</h2>
+        <p className="text-gray-900 mb-8 font-medium"><strong>{createdName}</strong> is now a member.</p>
         
         <div className="space-y-4 mb-8">
           <button 
             onClick={handleSendWelcome}
-            className="w-full bg-[#25D366] text-white py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#1fae53] transition-colors shadow-sm"
+            className="w-full bg-[#25D366] text-white py-3 px-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-[#1fae53] transition-colors shadow-md"
           >
-            <MessageCircle size={20} /> Send Magic Link (WhatsApp)
+            <MessageCircle size={20} /> Send Login via WhatsApp
           </button>
-          <p className="text-xs text-gray-500 px-4">
-            Sends an automated welcome message containing their secure login link to the Member Portal.
-          </p>
         </div>
 
-        <div className="border-t border-gray-100 pt-8 mb-8">
-          <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">WhatsApp Group Invite</h3>
+        <div className="border-t border-gray-200 pt-8 mb-8">
+          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Community Invite</h3>
           {groupUrl ? (
-            <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 inline-block">
-              <div className="bg-white p-4 rounded-lg shadow-sm mb-4 inline-block">
-                <React.Suspense fallback={<div className="w-48 h-48 bg-gray-100 animate-pulse rounded-lg"></div>}>
-                  <QRCode id="group-qr-code" value={groupUrl} size={192} level="H" />
+            <div className="flex flex-col items-center">
+              <div className="bg-white p-2 rounded-lg shadow-sm border border-gray-200 mb-4">
+                <React.Suspense fallback={<div className="w-32 h-32 bg-gray-100 animate-pulse rounded"></div>}>
+                  <QRCode id="group-qr-code" value={groupUrl} size={128} level="H" />
                 </React.Suspense>
               </div>
-              <p className="text-sm text-gray-600 mb-4 font-medium">Scan to join the gym group</p>
               <button 
                 onClick={handleDownloadQR}
-                className="w-full bg-white text-gray-700 py-2 px-4 rounded-lg font-semibold border border-gray-300 hover:bg-gray-50 transition-colors text-sm"
+                className="text-red-600 font-bold hover:text-red-700 transition-colors text-sm flex items-center justify-center gap-1"
               >
-                <Download size={16} className="inline mr-2"/> Download QR Code
+                <Download size={16} /> Save QR
               </button>
             </div>
           ) : (
-            <div className="text-sm text-gray-500 border border-dashed border-gray-300 bg-gray-50 p-6 rounded-xl">
-              No WhatsApp Group URL configured in Settings.
+            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+              No WhatsApp Group Configured
             </div>
           )}
         </div>
         
         <button 
           onClick={() => navigate('/')}
-          className="w-full bg-red-600 text-white py-4 rounded-xl font-bold hover:bg-red-700 transition-colors text-lg shadow-sm"
+          className="w-full bg-gray-900 text-white py-3 rounded-lg font-bold hover:bg-black transition-colors uppercase tracking-wider text-sm shadow-md"
         >
-          Back to Dashboard
+          Return to Dashboard
         </button>
       </div>
     );
