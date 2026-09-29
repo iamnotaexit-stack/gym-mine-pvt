@@ -209,10 +209,13 @@ function RootRoute() {
   return <Members />;
 }
 
+import { ErrorBoundary } from './ErrorBoundary';
+
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<ProtectedRoute><Layout><RootRoute /></Layout></ProtectedRoute>} />
@@ -227,8 +230,9 @@ function App() {
           <Route path="/settings" element={<ProtectedRoute requireOwner><Layout><Settings /></Layout></ProtectedRoute>} />
           <Route path="/activity" element={<ProtectedRoute requireOwner><Layout><ActivityLog /></Layout></ProtectedRoute>} />
         </Routes>
-      </Router>
-    </AuthProvider>
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
