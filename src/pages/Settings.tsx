@@ -10,6 +10,7 @@ export default function Settings() {
   const [newPlan, setNewPlan] = useState({ name: '', months: 1, price: 1000 });
   const [gymName, setGymName] = useState('');
   const [graceDays, setGraceDays] = useState(3);
+  const [admissionFee, setAdmissionFee] = useState(500);
   const [generalGroup, setGeneralGroup] = useState('');
   const [trainerGroup, setTrainerGroup] = useState('');
 
@@ -29,6 +30,7 @@ export default function Settings() {
     if (settings) {
       setGymName(settings.gym_name || '');
       setGraceDays(settings.grace_days || 3);
+      setAdmissionFee(settings.admission_fee || 500);
       setGeneralGroup(settings.group_url_general || '');
       setTrainerGroup(settings.group_url_trainer || '');
     }
@@ -48,6 +50,7 @@ export default function Settings() {
     await supabase.from('settings').update({
       gym_name: gymName,
       grace_days: graceDays,
+      admission_fee: admissionFee,
       group_url_general: generalGroup,
       group_url_trainer: trainerGroup
     }).eq('id', (await supabase.from('settings').select('id').single()).data?.id);
@@ -103,6 +106,10 @@ export default function Settings() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Grace Period (Days)</label>
             <input type="number" value={graceDays} onChange={e => setGraceDays(parseInt(e.target.value))} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Global Admission Fee (₹)</label>
+            <input type="number" value={admissionFee} onChange={e => setAdmissionFee(parseInt(e.target.value))} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">General WhatsApp Group URL</label>
