@@ -116,6 +116,8 @@ function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [isMagicLink, setIsMagicLink] = useState(false);
 
   if (user) return <Navigate to="/" />;
 
@@ -123,17 +125,28 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(false);
     const { supabase } = await import('./lib/supabase');
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setError(error.message);
-      setLoading(false);
+    
+    if (isMagicLink) {
+      const { error } = await supabase.auth.signInWithOtp({ email });
+      if (error) {
+        setError(error.message);
+      } else {
+        setSuccess(true);
+      }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setError(error.message);
+      }
     }
+    setLoading(false);
   };
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50  p-4">
-      <form onSubmit={handleLogin} className="bg-white  p-8 rounded-xl shadow-lg w-full max-w-sm border border-red-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <form onSubmit={handleLogin} className="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm border border-red-100">
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-sm">
             FP
@@ -141,7 +154,14 @@ function Login() {
         </div>
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">FitPro Login</h2>
         
+        {/* Tabs */}
+        <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
+          <button type="button" onClick={() => { setIsMagicLink(false); setError(null); setSuccess(false); }} className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${!isMagicLink ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'}`}>Password</button>
+          <button type="button" onClick={() => { setIsMagicLink(true); setError(null); setSuccess(false); }} className={`flex-1 text-sm font-medium py-2 rounded-md transition-colors ${isMagicLink ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'}`}>Magic Link</button>
+        </div>
+
         {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">{error}</div>}
+        {success && <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm mb-4">Check your email for the magic login link!</div>}
 
         <div className="space-y-4 mb-6">
           <div>
@@ -154,16 +174,19 @@ function Login() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 min-h-[44px]"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input 
-              required
-              type="password" 
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 min-h-[44px]"
-            />
-          </div>
+          
+          {!isMagicLink && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <input 
+                required
+                type="password" 
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 min-h-[44px]"
+              />
+            </div>
+          )}
         </div>
 
         <button 
@@ -171,7 +194,7 @@ function Login() {
           disabled={loading}
           className="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 min-h-[44px] shadow-sm disabled:opacity-50"
         >
-          {loading ? 'Signing in...' : 'Sign In'}
+          {loading ? 'Sending...' : (isMagicLink ? 'Send Magic Link' : 'Sign In')}
         </button>
       </form>
     </div>
