@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Calendar, CreditCard, FileText, Smartphone } from 'lucide-react';
+import { Calendar, CreditCard, Smartphone } from 'lucide-react';
 import { computeMemberStatus } from '../lib/dates';
 import type { Member, Payment } from '../types';
 import { QRCodeSVG } from 'qrcode.react';
@@ -11,6 +11,8 @@ export default function MemberDashboard() {
   const [member, setMember] = useState<Member | null>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [settings, setSettings] = useState<any>(null);
 
   useEffect(() => {
     if (user?.email) {
@@ -28,11 +30,13 @@ export default function MemberDashboard() {
       .single();
 
     if (memberData) {
-      const { data: settings } = await supabase.from('settings').select('grace_days').single();
+      const { data: settingsData } = await supabase.from('settings').select('*').single();
+      setSettings(settingsData);
+      
       memberData.status = computeMemberStatus(
         memberData.current_due_date,
         memberData.is_frozen,
-        settings?.grace_days || 3
+        settingsData?.grace_days || 3
       );
       setMember(memberData);
 
@@ -111,39 +115,65 @@ export default function MemberDashboard() {
               <div className="text-sm text-gray-500 mb-1 flex items-center gap-1"><Smartphone size={14} /> Phone</div>
               <div className="font-medium text-gray-900">{member.phone}</div>
             </div>
+            {member.has_trainer && member.trainer_name && (
+              <div className="col-span-2 pt-2 border-t border-gray-50">
+                <div className="text-sm text-gray-500 mb-1 font-bold">Personal Trainer</div>
+                <div className="font-medium text-gray-900">{member.trainer_name}</div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Payment History */}
-      <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm">
-        <h2 className="text-lg font-bold mb-4 flex items-center gap-2"><CreditCard size={20} /> Payment History</h2>
-        {payments.length === 0 ? (
-          <p className="text-gray-500 text-sm">No payments recorded yet.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-y border-gray-100">
-                  <th className="p-3 font-semibold text-gray-600 text-sm">Date</th>
-                  <th className="p-3 font-semibold text-gray-600 text-sm">Amount</th>
-                  <th className="p-3 font-semibold text-gray-600 text-sm">Period Covered</th>
-                  <th className="p-3 font-semibold text-gray-600 text-sm">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {payments.map(p => (
-                  <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td className="p-3 text-sm">{p.paid_on}</td>
-                    <td className="p-3 text-sm font-bold text-gray-900">₹{p.amount}</td>
-                    <td className="p-3 text-sm text-gray-600">{p.covers_from} to {p.covers_to}</td>
-                    <td className="p-3 text-sm text-green-600 font-medium flex items-center gap-1"><FileText size={14}/> Paid</td>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Payment History */}
+        <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2"><CreditCard size={20} /> Payment History</h2>
+          {payments.length === 0 ? (
+            <p className="text-gray-500 text-sm">No payments recorded yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50 border-y border-gray-100">
+                    <th className="p-3 font-semibold text-gray-600 text-sm">Date</th>
+                    <th className="p-3 font-semibold text-gray-600 text-sm">Amount</th>
+                    <th className="p-3 font-semibold text-gray-600 text-sm">Period Covered</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {payments.map(p => (
+                    <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                      <td className="p-3 text-sm">{p.paid_on}</td>
+                      <td className="p-3 text-sm font-bold text-gray-900">₹{p.amount}</td>
+                      <td className="p-3 text-sm text-gray-600">{p.covers_from} to {p.covers_to}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* WhatsApp Group QR */}
+        <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm flex flex-col items-center text-center justify-center">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2">WhatsApp Community</h2>
+          <p className="text-sm text-gray-600 mb-6">Scan this code to join our official gym WhatsApp group for updates and announcements.</p>
+          
+          {(member.has_trainer ? settings?.group_url_trainer : settings?.group_url_general) ? (
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 inline-block">
+              <QRCodeSVG 
+                value={member.has_trainer ? settings?.group_url_trainer : settings?.group_url_general} 
+                size={160} 
+                level="M" 
+              />
+            </div>
+          ) : (
+            <div className="text-gray-400 text-sm italic border border-dashed border-gray-200 p-8 rounded-lg w-full">
+              No WhatsApp group URL configured.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
