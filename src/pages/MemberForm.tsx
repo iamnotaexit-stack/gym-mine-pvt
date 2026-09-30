@@ -5,10 +5,12 @@ import type { Plan } from '../types';
 import { ArrowLeft, Save, MessageCircle, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { calculateNextDueDate } from '../lib/dates';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function MemberForm() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { role } = useAuth();
   const isEditing = Boolean(id);
 
   const [form, setForm] = useState({
@@ -32,6 +34,7 @@ export default function MemberForm() {
   const [payAdmissionFee, setPayAdmissionFee] = useState(true);
   const [payPlanFee, setPayPlanFee] = useState(true);
   const [globalAdmissionFee, setGlobalAdmissionFee] = useState(500);
+  const [admissionFeeEditable, setAdmissionFeeEditable] = useState(true);
 
   useEffect(() => {
     fetchPlans();
@@ -48,9 +51,10 @@ export default function MemberForm() {
         setForm(f => ({ ...f, plan_id: data[0].id }));
       }
     }
-    const { data: settings } = await supabase.from('settings').select('admission_fee').single();
+    const { data: settings } = await supabase.from('settings').select('admission_fee, admission_fee_editable').single();
     if (settings && settings.admission_fee !== undefined) {
       setGlobalAdmissionFee(settings.admission_fee);
+      setAdmissionFeeEditable(settings.admission_fee_editable !== false);
     }
   };
 
@@ -338,9 +342,10 @@ export default function MemberForm() {
                     <span className="text-sm font-medium text-gray-600">₹</span>
                     <input 
                       type="number"
+                      disabled={!admissionFeeEditable && role !== 'owner'}
                       value={globalAdmissionFee}
                       onChange={e => setGlobalAdmissionFee(parseInt(e.target.value) || 0)}
-                      className="w-24 px-2 py-1 rounded border border-gray-300 focus:ring-2 focus:ring-red-500 text-sm"
+                      className="w-24 px-2 py-1 rounded border border-gray-300 focus:ring-2 focus:ring-red-500 text-sm disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
                     />
                   </div>
                 )}

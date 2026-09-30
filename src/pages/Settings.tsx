@@ -27,6 +27,7 @@ export default function Settings() {
   const [gymName, setGymName] = useState('');
   const [graceDays, setGraceDays] = useState(3);
   const [admissionFee, setAdmissionFee] = useState(500);
+  const [admissionFeeEditable, setAdmissionFeeEditable] = useState(true);
   const [generalGroup, setGeneralGroup] = useState('');
   const [trainerGroup, setTrainerGroup] = useState('');
 
@@ -47,6 +48,7 @@ export default function Settings() {
       setGymName(settings.gym_name || '');
       setGraceDays(settings.grace_days || 3);
       setAdmissionFee(settings.admission_fee || 500);
+      setAdmissionFeeEditable(settings.admission_fee_editable !== false);
       setGeneralGroup(settings.group_url_general || '');
       setTrainerGroup(settings.group_url_trainer || '');
     }
@@ -67,6 +69,7 @@ export default function Settings() {
       gym_name: gymName,
       grace_days: graceDays,
       admission_fee: admissionFee,
+      admission_fee_editable: admissionFeeEditable,
       group_url_general: generalGroup,
       group_url_trainer: trainerGroup
     }).eq('id', (await supabase.from('settings').select('id').single()).data?.id);
@@ -145,6 +148,10 @@ export default function Settings() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t('admission_fee')}</label>
             <input type="number" value={admissionFee} onChange={e => setAdmissionFee(parseInt(e.target.value))} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
+            <label className="flex items-center gap-2 mt-2 cursor-pointer">
+              <input type="checkbox" checked={admissionFeeEditable} onChange={e => setAdmissionFeeEditable(e.target.checked)} className="w-4 h-4 text-red-600 rounded focus:ring-red-500" />
+              <span className="text-xs text-gray-600">Allow trainers/sub-admins to edit this fee during signup</span>
+            </label>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">{t('general_group')}</label>
