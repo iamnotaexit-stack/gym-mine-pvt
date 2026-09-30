@@ -58,29 +58,53 @@ export const translations = {
     role_member: 'Member',
     loading: 'Loading...',
 
-    // UI Language section in Settings
-    ui_language: 'UI Language (Display Language)',
-    ui_language_desc: 'Change the language of buttons, navigation, and screens.',
-    active_language_indicator: 'Active UI Language: {lang}',
+    // Settings page
+    settings_title: 'Settings',
     settings_subtitle: 'Configure gym operations, plans, and regional Guwahati preferences.',
-    language_section_title: 'Language & Regional Settings',
-    language_section_desc: 'Select preferred language with local Guwahati, Assam touch.',
-    language_label: 'Application Language',
-    language_english: 'English (Global)',
-    language_hindi: 'हिंदी (Hindi)',
-    language_assamese: 'অসমীয়া (Assamese - Guwahati)',
+    general_settings: 'General Settings',
+    gym_name: 'Gym Name',
+    grace_days: 'Grace Period (Days)',
+    admission_fee: 'Global Admission Fee (₹)',
+    general_group: 'General WhatsApp Group URL',
+    trainer_group: 'Trainer WhatsApp Group URL',
+    save_settings_btn: 'Save Settings',
+    saved_alert: 'Settings saved successfully!',
+
+    // Regional & WhatsApp section
+    language_section_title: 'Regional & WhatsApp Reminders (Guwahati, Assam)',
+    regional_whatsapp_title: 'Regional & WhatsApp Reminders (Guwahati, Assam)',
+    regional_whatsapp_desc: 'WhatsApp reminder templates with authentic Guwahati local phrasing.',
     region_label: 'Region & Area',
     location_details: 'Guwahati, Kamrup Metro, Assam (India)',
-    local_touch_title: 'Guwahati Local Touch',
-    local_touch_desc: 'Enables Assamese cultural greetings, local Guwahati phrasing, and trilingual WhatsApp reminders.',
+    local_greeting_label: 'Local Greeting',
+    tagline_label: 'Tagline / Motto',
     whatsapp_language_pref: 'Default WhatsApp Reminder Language',
     whatsapp_lang_desc: 'Messages generated in Chase List will use this language by default with Guwahati phrasing.',
     template_preview_title: 'WhatsApp Reminder Message Previews',
     due_soon_preview: 'Due Soon Reminder',
     due_today_preview: 'Due Today Reminder',
     overdue_preview: 'Overdue Reminder',
-    local_greeting_label: 'Local Greeting',
-    tagline_label: 'Tagline / Motto',
+
+    // Manage Plans
+    manage_plans: 'Manage Plans',
+    plan_name: 'Plan Name',
+    months: 'Months',
+    price: 'Price (₹)',
+    add_plan: 'Add Plan',
+    no_plans_yet: 'No plans created yet.',
+
+    // Subadmins
+    subadmins_title: 'Sub-Admins / Trainers',
+    subadmins_desc: 'Trainers and sub-administrators who can assist in gym management.',
+    trainer_name_label: 'Trainer Name',
+    trainer_email_label: 'Trainer Email',
+    invite_btn: 'Invite',
+    no_subadmins_yet: 'No sub-admins found.',
+
+    // Admin Tools
+    admin_tools: 'Admin Tools',
+    activity_log_desc: 'View recent actions',
+    trash_desc: 'Restore or delete members',
 
     // Members page
     members_title: 'Members',
@@ -124,31 +148,6 @@ export const translations = {
     quick_pay_upi: 'UPI',
     quick_pay_cash: 'Cash',
     reminder_lang_selector: 'Reminder Language',
-
-    // Settings page
-    general_settings: 'General Settings',
-    gym_name: 'Gym Name',
-    grace_days: 'Grace Period (Days)',
-    admission_fee: 'Global Admission Fee (₹)',
-    general_group: 'General WhatsApp Group URL',
-    trainer_group: 'Trainer WhatsApp Group URL',
-    manage_plans: 'Manage Plans',
-    plan_name: 'Plan Name',
-    months: 'Months',
-    price: 'Price (₹)',
-    add_plan: 'Add Plan',
-    no_plans_yet: 'No plans created yet.',
-    subadmins_title: 'Sub-Admins / Trainers',
-    subadmins_desc: 'Trainers and sub-administrators who can assist in gym management.',
-    trainer_name_label: 'Trainer Name',
-    trainer_email_label: 'Trainer Email',
-    invite_btn: 'Invite',
-    no_subadmins_yet: 'No sub-admins found.',
-    admin_tools: 'Admin Tools',
-    activity_log_desc: 'View recent actions',
-    trash_desc: 'Restore or delete members',
-    save_settings_btn: 'Save Settings',
-    saved_alert: 'Settings saved successfully!',
 
     // Receipt page
     payment_receipt: 'PAYMENT RECEIPT',
@@ -199,29 +198,53 @@ export const translations = {
     role_member: 'सदस्य',
     loading: 'लोड हो रहा है...',
 
-    // UI Language section in Settings
-    ui_language: 'UI भाषा (प्रदर्शित भाषा)',
-    ui_language_desc: 'बटन, नेविगेशन और स्क्रीन की भाषा बदलें।',
-    active_language_indicator: 'सक्रिय UI भाषा: {lang}',
+    // Settings page
+    settings_title: 'सेटिंग्स',
     settings_subtitle: 'जिम संचालन, प्लान और गुवाहाटी क्षेत्रीय सेटिंग्स कॉन्फ़िगर करें।',
-    language_section_title: 'भाषा और क्षेत्रीय सेटिंग्स',
-    language_section_desc: 'गुवाहाटी, असम के स्थानीय अनुभव के साथ अपनी पसंदीदा भाषा चुनें।',
-    language_label: 'एप्लिकेशन भाषा',
-    language_english: 'English (ग्लोबल)',
-    language_hindi: 'हिंदी (Hindi)',
-    language_assamese: 'অসমীয়া (असमिया - गुवाहाटी)',
+    general_settings: 'सामान्य सेटिंग्स',
+    gym_name: 'जिम का नाम',
+    grace_days: 'ग्रेस पीरियड (दिन)',
+    admission_fee: 'प्रवेश शुल्क (₹)',
+    general_group: 'सामान्य व्हाट्सएप ग्रुप लिंक',
+    trainer_group: 'ट्रेनर व्हाट्सएप ग्रुप लिंक',
+    save_settings_btn: 'सेटिंग्स सुरक्षित करें',
+    saved_alert: 'सेटिंग्स सफलतापूर्वक सुरक्षित कर ली गईं!',
+
+    // Regional & WhatsApp section
+    language_section_title: 'क्षेत्रीय और व्हाट्सएप रिमाइंडर (गुवाहाटी, असम)',
+    regional_whatsapp_title: 'क्षेत्रीय और व्हाट्सएप रिमाइंडर (गुवाहाटी, असम)',
+    regional_whatsapp_desc: 'गुवाहाटी की स्थानीय शैली के साथ व्हाट्सएप संदेश टेम्प्लेट।',
     region_label: 'क्षेत्र और स्थान',
     location_details: 'गुवाहाटी, कामरूप मेट्रोपॉलिटन, असम (भारत)',
-    local_touch_title: 'गुवाहाटी लोकल टच',
-    local_touch_desc: 'गुवाहाटी का स्थानीय अभिवादन और असमिया/हिंदी व्हाट्सएप संदेश टेम्प्लेट सक्षम करें।',
+    local_greeting_label: 'स्थानीय अभिवादन',
+    tagline_label: 'आदर्श वाक्य / ध्येय',
     whatsapp_language_pref: 'व्हाट्सएप रिमाइंडर की डिफ़ॉल्ट भाषा',
     whatsapp_lang_desc: 'चेज़ लिस्ट में संदेश डिफ़ॉल्ट रूप से गुवाहाटी शैली में इस भाषा का उपयोग करेंगे।',
     template_preview_title: 'व्हाट्सएप रिमाइंडर संदेश पूर्वावलोकन',
     due_soon_preview: 'जल्द देय का रिमाइंडर',
     due_today_preview: 'आज देय का रिमाइंडर',
     overdue_preview: 'बकाया का रिमाइंडर',
-    local_greeting_label: 'स्थानीय अभिवादन',
-    tagline_label: 'आदर्श वाक्य / ध्येय',
+
+    // Manage Plans
+    manage_plans: 'प्लान प्रबंधन',
+    plan_name: 'प्लान का नाम',
+    months: 'महीने',
+    price: 'कीमत (₹)',
+    add_plan: 'प्लान जोड़ें',
+    no_plans_yet: 'अभी तक कोई प्लान नहीं बनाया गया।',
+
+    // Subadmins
+    subadmins_title: 'सब-एडमिन / ट्रेनर',
+    subadmins_desc: 'ट्रेनर और सब-एडमिन जो जिम प्रबंधन में सहायता कर सकते हैं।',
+    trainer_name_label: 'ट्रेनर का नाम',
+    trainer_email_label: 'ट्रेनर का ईमेल',
+    invite_btn: 'आमंत्रित करें',
+    no_subadmins_yet: 'कोई सब-एडमिन नहीं मिला।',
+
+    // Admin Tools
+    admin_tools: 'एडमिन टूल्स',
+    activity_log_desc: 'हाल की गतिविधियां देखें',
+    trash_desc: 'सदस्यों को पुनर्स्थापित या हटाएं',
 
     // Members page
     members_title: 'सदस्य सूची',
@@ -265,31 +288,6 @@ export const translations = {
     quick_pay_upi: 'यूपीआई',
     quick_pay_cash: 'नकद',
     reminder_lang_selector: 'संदेश भाषा',
-
-    // Settings page
-    general_settings: 'सामान्य सेटिंग्स',
-    gym_name: 'जिम का नाम',
-    grace_days: 'ग्रेस पीरियड (दिन)',
-    admission_fee: 'प्रवेश शुल्क (₹)',
-    general_group: 'सामान्य व्हाट्सएप ग्रुप लिंक',
-    trainer_group: 'ट्रेनर व्हाट्सएप ग्रुप लिंक',
-    manage_plans: 'प्लान प्रबंधन',
-    plan_name: 'प्लान का नाम',
-    months: 'महीने',
-    price: 'कीमत (₹)',
-    add_plan: 'प्लान जोड़ें',
-    no_plans_yet: 'अभी तक कोई प्लान नहीं बनाया गया।',
-    subadmins_title: 'सब-एडमिन / ट्रेनर',
-    subadmins_desc: 'ट्रेनर और सब-एडमिन जो जिम प्रबंधन में सहायता कर सकते हैं।',
-    trainer_name_label: 'ट्रेनर का नाम',
-    trainer_email_label: 'ट्रेनर का ईमेल',
-    invite_btn: 'आमंत्रित करें',
-    no_subadmins_yet: 'कोई सब-एडमिन नहीं मिला।',
-    admin_tools: 'एडमिन टूल्स',
-    activity_log_desc: 'हाल की गतिविधियां देखें',
-    trash_desc: 'सदस्यों को पुनर्स्थापित या हटाएं',
-    save_settings_btn: 'सेटिंग्स सुरक्षित करें',
-    saved_alert: 'सेटिंग्स सफलतापूर्वक सुरक्षित कर ली गईं!',
 
     // Receipt page
     payment_receipt: 'भुगतान रसीद',
@@ -340,29 +338,53 @@ export const translations = {
     role_member: 'সদস্য',
     loading: 'অপেক্ষা কৰক...',
 
-    // UI Language section in Settings
-    ui_language: 'এপ্পৰ ভাষা (UI Language)',
-    ui_language_desc: 'বুটাম, তালিকা আৰু স্ক্ৰীণৰ ভাষা সলনি কৰক।',
-    active_language_indicator: 'বৰ্তমান এপ্পৰ ভাষা: {lang}',
+    // Settings page
+    settings_title: 'ছেটিংছ',
     settings_subtitle: 'জিমৰ কাৰ্যাৱলী, প্লেন আৰু গুৱাহাটীৰ আঞ্চলিক ছেটিংছ পৰিচালনা কৰক।',
-    language_section_title: 'ভাষা আৰু আঞ্চলিক ছেটিংছ',
-    language_section_desc: 'গুৱাহাটী, অসমৰ স্থানীয় পৰিৱেশ আৰু বৈশিষ্ট্যৰ সৈতে আপোনাৰ ভাষা বাছক।',
-    language_label: 'এপ্লিকেচনৰ ভাষা',
-    language_english: 'English (ইংৰাজী)',
-    language_hindi: 'हिंदी (হিন্দী)',
-    language_assamese: 'অসমীয়া (Assamese - গুৱাহাটী)',
+    general_settings: 'সাধাৰণ ছেটিংছ',
+    gym_name: 'জিমৰ নাম',
+    grace_days: 'অতিৰিক্ত ৰেহাই দিন (Grace Days)',
+    admission_fee: 'নামভৰ্তি মাছুল (₹)',
+    general_group: 'সাধাৰণ হোৱাটছএপ গোটৰ লিংক',
+    trainer_group: 'প্ৰশিক্ষক হোৱাটছএপ গোটৰ লিংক',
+    save_settings_btn: 'ছেটিংছ সংৰক্ষণ কৰক',
+    saved_alert: 'ছেটিংছ সফলতাৰে সংৰক্ষণ কৰা হ’ল!',
+
+    // Regional & WhatsApp section
+    language_section_title: 'আঞ্চলিক আৰু হোৱাটছএপ সোঁৱৰণী (গুৱাহাটী, অসম)',
+    regional_whatsapp_title: 'আঞ্চলিক আৰু হোৱাটছএপ সোঁৱৰণী (গুৱাহাটী, অসম)',
+    regional_whatsapp_desc: 'গুৱাহাটীৰ স্থানীয় সুবাসেৰে হোৱাটছএপ সোঁৱৰণী বাৰ্তাৰ আৰ্হি।',
     region_label: 'অঞ্চল আৰু স্থান',
     location_details: 'গুৱাহাটী, কামৰূপ মহানগৰ, অসম (ভাৰত)',
-    local_touch_title: 'গুৱাহাটীৰ স্থানীয় সুবাস',
-    local_touch_desc: 'অসমীয়া সম্ভাষণ আৰু স্থানীয় গুৱাহাটী হোৱাটছএপ বাৰ্তাৰ আৰ্হি সক্ৰিয় কৰক।',
+    local_greeting_label: 'স্থানীয় সম্ভাষণ',
+    tagline_label: 'মূলমন্ত্ৰ / সংকল্প',
     whatsapp_language_pref: 'হোৱাটছএপ সোঁৱৰণীৰ মূল ভাষা',
     whatsapp_lang_desc: 'মাছুল সংগ্ৰহ তালিকাত এই ভাষাৰ আধাৰত গুৱাহাটীৰ স্থানীয় সুবাসেৰে হোৱাটছএপ বাৰ্তা প্ৰস্তুত হ’ব।',
     template_preview_title: 'হোৱাটছএপ সোঁৱৰণী বাৰ্তাৰ আৰ্হি',
     due_soon_preview: 'সোনকালে পৰিশোধৰ সোঁৱৰণী',
     due_today_preview: 'আজিৰ ভিতৰত পৰিশোধৰ সোঁৱৰণী',
     overdue_preview: 'বিলম্বিত পৰিশোধৰ সোঁৱৰণী',
-    local_greeting_label: 'স্থানীয় সম্ভাষণ',
-    tagline_label: 'মূলমন্ত্ৰ / সংকল্প',
+
+    // Manage Plans
+    manage_plans: 'প্লেনসমূহ পৰিচালনা কৰক',
+    plan_name: 'প্লেনৰ নাম',
+    months: 'মাহ',
+    price: 'মূল্য (₹)',
+    add_plan: 'নতুন প্লেন যোগ কৰক',
+    no_plans_yet: 'এতিয়ালৈকে কোনো প্লেন সৃষ্টি কৰা হোৱা নাই।',
+
+    // Subadmins
+    subadmins_title: 'সহায়কাৰী প্ৰশিক্ষক / চাব-এডমিন',
+    subadmins_desc: 'জিম পৰিচালনাত সহায় কৰা প্ৰশিক্ষক আৰু চাব-এডমিনসকল।',
+    trainer_name_label: 'প্ৰশিক্ষকৰ নাম',
+    trainer_email_label: 'প্ৰশিক্ষকৰ ইমেইল',
+    invite_btn: 'আমন্ত্ৰণ জনাওক',
+    no_subadmins_yet: 'কোনো সহায়কাৰী প্ৰশিক্ষক পোৱা নগ’ল।',
+
+    // Admin Tools
+    admin_tools: 'পৰিচালকৰ সঁজুলিসমূহ',
+    activity_log_desc: 'শেহতীয়া কাৰ্যকলাপ চাওক',
+    trash_desc: 'মচি পেলোৱা সদস্য পুনৰুদ্ধাৰ কৰক',
 
     // Members page
     members_title: 'সদস্যসকল',
@@ -406,31 +428,6 @@ export const translations = {
     quick_pay_upi: 'ইউপিআই',
     quick_pay_cash: 'নগদ',
     reminder_lang_selector: 'বাৰ্তাৰ ভাষা',
-
-    // Settings page
-    general_settings: 'সাধাৰণ ছেটিংছ',
-    gym_name: 'জিমৰ নাম',
-    grace_days: 'অতিৰিক্ত ৰেহাই দিন (Grace Days)',
-    admission_fee: 'নামভৰ্তি মাছুল (₹)',
-    general_group: 'সাধাৰণ হোৱাটছএপ গোটৰ লিংক',
-    trainer_group: 'প্ৰশিক্ষক হোৱাটছএপ গোটৰ লিংক',
-    manage_plans: 'প্লেনসমূহ পৰিচালনা কৰক',
-    plan_name: 'প্লেনৰ নাম',
-    months: 'মাহ',
-    price: 'মূল্য (₹)',
-    add_plan: 'নতুন প্লেন যোগ কৰক',
-    no_plans_yet: 'এতিয়ালৈকে কোনো প্লেন সৃষ্টি কৰা হোৱা নাই।',
-    subadmins_title: 'সহায়কাৰী প্ৰশিক্ষক / চাব-এডমিন',
-    subadmins_desc: 'জিম পৰিচালনাত সহায় কৰা প্ৰশিক্ষক আৰু চাব-এডমিনসকল।',
-    trainer_name_label: 'প্ৰশিক্ষকৰ নাম',
-    trainer_email_label: 'প্ৰশিক্ষকৰ ইমেইল',
-    invite_btn: 'আমন্ত্ৰণ জনাওক',
-    no_subadmins_yet: 'কোনো সহায়কাৰী প্ৰশিক্ষক পোৱা নগ’ল।',
-    admin_tools: 'পৰিচালকৰ সঁজুলিসমূহ',
-    activity_log_desc: 'শেহতীয়া কাৰ্যকলাপ চাওক',
-    trash_desc: 'মচি পেলোৱা সদস্য পুনৰুদ্ধাৰ কৰক',
-    save_settings_btn: 'ছেটিংছ সংৰক্ষণ কৰক',
-    saved_alert: 'ছেটিংছ সফলতাৰে সংৰক্ষণ কৰা হ’ল!',
 
     // Receipt page
     payment_receipt: 'মাছুল পৰিশোধৰ ৰচিদ',
@@ -479,24 +476,24 @@ export function generateWhatsAppReminder(
     // Assamese with authentic Guwahati local phrasing
     if (offset < 0) {
       const days = Math.abs(offset);
-      return `নমস্কাৰ ${name} ডাঙৰীয়া/বাইদেউ, ${gymName}, গুৱাহাটীৰ পৰা জনোৱা হৈছে যে আপোনাৰ জিমৰ মাছুল অহা ${date} তাৰিখে (${days} দিন পিছত) পৰিশোধ কৰিবলগীয়া। অনুগ্ৰহ কৰি সময়মতে মাছুল জমা দি স্বাস্থ্য চৰ্চা অব্যাহত ৰাখক। ধন্যবাদ!`;
+      return `নমস্কাৰ ${name}, ${gymName} (গুৱাহাটী)ৰ পৰা সোঁৱৰণী: আপোনাৰ জিমৰ মাছুল অহা ${date} তাৰিখে (${days} দিনৰ পিছত) পৰিশোধ কৰিবলগীয়া। অনুগ্ৰহ কৰি সময়মতে পৰিশোধ কৰক। ধন্যবাদ!`;
     }
     if (offset === 0) {
-      return `নমস্কাৰ ${name} ডাঙৰীয়া/বাইদেউ, ${gymName}, গুৱাহাটীৰ পৰা জনোৱা হৈছে যে আপোনাৰ জিমৰ মাছুল আজি (${date}) পৰিশোধ কৰিবলগীয়া। অনুগ্ৰহ কৰি আজি পৰিশোধ সম্পূৰ্ণ কৰক। আপোনাৰ সুস্বাস্থ্য আমাৰ কামনা। ধন্যবাদ!`;
+      return `নমস্কাৰ ${name}, ${gymName} (গুৱাহাটী)ৰ পৰা সোঁৱৰণী: আপোনাৰ জিমৰ মাছুল আজি (${date}) পৰিশোধ কৰিবলগীয়া। অনুগ্ৰহ কৰি আজি পৰিশোধ সম্পূৰ্ণ কৰক। ধন্যবাদ!`;
     }
-    return `নমস্কাৰ ${name} ডাঙৰীয়া/বাইদেউ, ${gymName}, গুৱাহাটীৰ পৰা জনোৱা হৈছে যে আপোনাৰ জিমৰ মাছুল বিগত ${date} তাৰিখে পৰিশোধৰ দিন উকলি গৈছে (${offset} দিন পলম হৈছে)। অনুগ্ৰহ কৰি সোনকালে মাছুল পৰিশোধ কৰি জিম সেৱা নিয়মিত ৰাখক। ধন্যবাদ!`;
+    return `নমস্কাৰ ${name}, ${gymName} (গুৱাহাটী)ৰ পৰা সোঁৱৰণী: আপোনাৰ জিমৰ মাছুল বিগত ${date} তাৰিখে পৰিশোধৰ দিন উকলি গৈছে (${offset} দিন পলম হৈছে)। অনুগ্ৰহ কৰি অতি সোনকালে পৰিশোধ কৰক। ধন্যবাদ!`;
   }
 
   if (lang === 'hi') {
     // Hindi with warm local touch
     if (offset < 0) {
       const days = Math.abs(offset);
-      return `नमस्ते ${name} जी, ${gymName} गुवाहाटी से विनम्र अनुस्मारक: आपकी जिम फीस ${date} को (${days} दिनों में) देय है। कृपया समय पर भुगतान करें। धन्यवाद!`;
+      return `नमस्ते ${name} जी, ${gymName} (गुवाहाटी) से विनम्र अनुस्मारक: आपकी जिम फीस ${date} को (${days} दिनों में) देय है। कृपया समय पर भुगतान करें। धन्यवाद!`;
     }
     if (offset === 0) {
-      return `नमस्ते ${name} जी, ${gymName} गुवाहाटी से विनम्र अनुस्मारक: आपकी जिम फीस आज (${date}) देय है। कृपया आज ही भुगतान पूर्ण करें। धन्यवाद!`;
+      return `नमस्ते ${name} जी, ${gymName} (गुवाहाटी) से विनम्र अनुस्मारक: आपकी जिम फीस आज (${date}) देय है। कृपया आज ही भुगतान पूर्ण करें। धन्यवाद!`;
     }
-    return `नमस्ते ${name} जी, ${gymName} गुवाहाटी से विनम्र अनुस्मारक: आपकी जिम फीस ${date} को देय थी (${offset} दिन लेट)। कृपया जल्द से जल्द भुगतान कर अपनी फिटनेस यात्रा जारी रखें। धन्यवाद!`;
+    return `नमस्ते ${name} जी, ${gymName} (गुवाहाटी) से अनुस्मारक: आपकी जिम फीस ${date} को देय थी (${offset} दिन लेट)। कृपया जल्द से जल्द भुगतान करें। धन्यवाद!`;
   }
 
   // English (Default) with Guwahati local reference

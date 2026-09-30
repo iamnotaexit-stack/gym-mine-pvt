@@ -7,22 +7,17 @@ import {
   Plus, 
   Save, 
   Trash as TrashIcon,
-  Globe,
   MapPin,
   MessageCircle,
-  Sparkles,
-  CheckCircle2
+  Sparkles
 } from 'lucide-react';
 import type { Plan } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
-import LanguageSelector from '../components/LanguageSelector';
 import type { Language } from '../lib/translations';
 
 export default function Settings() {
   const { 
     t, 
-    language, 
-    setLanguage, 
     whatsappLanguage, 
     setWhatsappLanguage, 
     regionInfo, 
@@ -111,9 +106,10 @@ export default function Settings() {
 
   if (loading) return <div className="p-8 text-center text-gray-500">{t('loading')}</div>;
 
-  const currentLangLabel = language === 'as' 
-    ? 'অসমীয়া (Assamese - Guwahati)' 
-    : (language === 'hi' ? 'हिंदी (Hindi)' : 'English (Global)');
+  // Language-appropriate sample name to avoid mixed-script font rendering glitches
+  const sampleMemberName = whatsappLanguage === 'as' 
+    ? 'ৰাহুল শৰ্মা' 
+    : (whatsappLanguage === 'hi' ? 'राहुल शर्मा' : 'Rahul Sharma');
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
@@ -127,42 +123,11 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* 1. GENERAL SETTINGS WITH EXPLICIT UI LANGUAGE DROPDOWN */}
+      {/* 1. GENERAL SETTINGS */}
       <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6">
         <h2 className="text-lg font-bold border-b border-red-100 pb-2 flex items-center gap-2 text-gray-900">
           <SettingsIcon size={20} className="text-red-600" /> {t('general_settings')}
         </h2>
-        
-        {/* Prominent UI Language Selector Field in General Settings */}
-        <div className="bg-red-50/70 p-4 rounded-xl border border-red-200">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <label htmlFor="ui-language-select" className="block text-sm font-bold text-gray-900 flex items-center gap-2">
-                <Globe size={18} className="text-red-600" />
-                {t('ui_language')}
-              </label>
-              <p className="text-xs text-gray-600 mt-0.5">
-                {t('ui_language_desc')}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <select
-                id="ui-language-select"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as Language)}
-                className="bg-white px-4 py-2 rounded-lg border border-red-300 font-bold text-sm text-gray-900 focus:ring-2 focus:ring-red-500 shadow-xs cursor-pointer min-h-[42px]"
-              >
-                <option value="en">English (Global)</option>
-                <option value="as">অসমীয়া (Assamese - গুৱাহাটী, অসম)</option>
-                <option value="hi">हिंदी (Hindi)</option>
-              </select>
-            </div>
-          </div>
-          <div className="mt-3 pt-2 border-t border-red-100 text-xs text-red-700 font-medium flex items-center gap-1.5">
-            <CheckCircle2 size={14} className="text-green-600 shrink-0" />
-            <span>{t('active_language_indicator', { lang: currentLangLabel })}</span>
-          </div>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -191,28 +156,20 @@ export default function Settings() {
         </button>
       </div>
 
-      {/* 2. DEDICATED REGIONAL & LANGUAGE TOUCH SECTION */}
-      <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6 ring-1 ring-red-500/10">
+      {/* 2. REGIONAL & WHATSAPP REMINDERS (GUWAHATI, ASSAM) */}
+      <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6">
         <div className="border-b border-red-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h2 className="text-lg font-bold flex items-center gap-2 text-gray-900">
-              <Globe size={20} className="text-red-600" /> {t('language_section_title')}
+              <MessageCircle size={20} className="text-red-600" /> {t('regional_whatsapp_title')}
             </h2>
             <p className="text-xs text-gray-600 mt-1">
-              {t('language_section_desc')}
+              {t('regional_whatsapp_desc')}
             </p>
           </div>
           <span className="text-xs px-2.5 py-1 bg-gradient-to-r from-red-600 to-orange-600 text-white font-bold rounded-full w-max flex items-center gap-1 shadow-xs">
             <Sparkles size={12} /> Guwahati Local Touch
           </span>
-        </div>
-
-        {/* Interactive Trilingual Language Cards */}
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-gray-700">
-            {t('language_label')}
-          </label>
-          <LanguageSelector variant="cards" showRegionBadge />
         </div>
 
         {/* Regional Info Banner for Guwahati */}
@@ -236,7 +193,7 @@ export default function Settings() {
         </div>
 
         {/* WhatsApp Reminder Default Language Preference */}
-        <div className="pt-4 border-t border-gray-100 space-y-4">
+        <div className="pt-2 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <label className="block text-sm font-semibold text-gray-800">
@@ -271,7 +228,7 @@ export default function Settings() {
               <span>{t('template_preview_title')} ({whatsappLanguage === 'as' ? 'অসমীয়া' : (whatsappLanguage === 'hi' ? 'हिंदी' : 'English')})</span>
             </div>
             <div className="p-3 bg-white rounded-lg border border-red-200 text-xs sm:text-sm text-gray-800 font-sans shadow-xs whitespace-pre-line leading-relaxed">
-              {getWhatsAppText('ৰাহুল শৰ্মা (Rahul)', '2026-10-05', -3, whatsappLanguage)}
+              {getWhatsAppText(sampleMemberName, '2026-10-05', -3, whatsappLanguage)}
             </div>
           </div>
         </div>
