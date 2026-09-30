@@ -45,9 +45,7 @@ function Layout({ children }: { children: React.ReactNode }) {
                 <span>{t('app_subtitle')}</span>
               </div>
             </div>
-            <div className="sm:hidden">
-              <LanguageSelector variant="header" />
-            </div>
+            
           </div>
         </div>
 

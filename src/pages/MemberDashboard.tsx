@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Calendar, CreditCard, Smartphone, MapPin, Sparkles } from 'lucide-react';
+import { Calendar, CreditCard, Smartphone, MapPin, Globe, Sparkles } from 'lucide-react';
 import { computeMemberStatus } from '../lib/dates';
 import type { Member, Payment } from '../types';
+import type { Language } from '../lib/translations';
 import { QRCodeSVG } from 'qrcode.react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function MemberDashboard() {
   const { user } = useAuth();
-  const { t, regionInfo } = useLanguage();
+  const { t, regionInfo, language, setLanguage } = useLanguage();
   const [member, setMember] = useState<Member | null>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -181,9 +182,32 @@ export default function MemberDashboard() {
             {member.has_trainer && member.trainer_name && (
               <div className="sm:col-span-2 pt-4 border-t border-gray-100">
                 <div className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">{t('personal_trainer')}</div>
-                <div className="font-medium text-gray-900">{member.trainer_name}</div>
+                <div className="font-medium text-gray-900">{member.trainer_name}
+            <div className="sm:col-span-2 pt-6 mt-4 border-t border-gray-100">
+              <div className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-3 flex items-center gap-1">
+                <Globe size={14} /> App Language
               </div>
-            )}
+              <div className="flex flex-wrap gap-2">
+                {(['en', 'hi', 'as'] as Language[]).map((l) => (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => setLanguage(l)}
+                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                      language === l
+                        ? 'bg-red-600 text-white shadow-xs'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {l === 'as' ? 'অসমীয়া' : (l === 'hi' ? 'हिंदी' : 'English')}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
           </div>
         </div>
       )}

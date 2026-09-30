@@ -7,6 +7,7 @@ import {
   Plus, 
   Save, 
   Trash as TrashIcon,
+  Globe,
   MapPin,
   MessageCircle,
   Sparkles
@@ -18,6 +19,8 @@ import type { Language } from '../lib/translations';
 export default function Settings() {
   const { 
     t, 
+    language,
+    setLanguage,
     whatsappLanguage, 
     setWhatsappLanguage, 
     regionInfo, 
@@ -120,6 +123,30 @@ export default function Settings() {
         </div>
         <div className="flex items-center gap-2 bg-red-50 text-red-700 px-3 py-1.5 rounded-lg border border-red-100 text-xs font-semibold self-start sm:self-auto">
           <MapPin size={14} /> Guwahati, Assam
+        </div>
+      </div>
+
+      
+      {/* 0. APP SETTINGS */}
+      <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6">
+        <h2 className="text-lg font-bold border-b border-red-100 pb-2 flex items-center gap-2 text-gray-900">
+          <Globe size={20} className="text-red-600" /> App UI Language
+        </h2>
+        <div className="flex gap-2">
+          {(['en', 'hi', 'as'] as Language[]).map((l) => (
+            <button
+              key={l}
+              type="button"
+              onClick={() => setLanguage(l)}
+              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                language === l
+                  ? 'bg-red-600 text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {l === 'as' ? 'অসমীয়া (Local)' : (l === 'hi' ? 'हिंदी' : 'English')}
+            </button>
+          ))}
         </div>
       </div>
 
