@@ -38,6 +38,8 @@ export interface Payment {
   covers_from: string;
   covers_to: string;
   note: string | null;
+  voided_at?: string | null;
+  void_reason?: string | null;
   created_by: string;
 }
 

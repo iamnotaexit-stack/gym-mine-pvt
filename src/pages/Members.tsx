@@ -4,6 +4,7 @@ import type { Member } from '../types';
 import { computeMemberStatus } from '../lib/dates';
 import { Search, Plus, Filter, Edit, Trash2, UserCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { mockMembers } from '../lib/mockData';
 import ConfirmModal from '../components/ConfirmModal';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -53,9 +54,13 @@ export default function Members() {
   };
   
 
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const ITEMS_PER_PAGE = 50;
+
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [page]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -70,6 +75,7 @@ export default function Members() {
           };
         });
         setMembers(processed);
+        setHasMore(false);
       } catch (err) {
         console.error('Mock data error:', err);
       } finally {
@@ -81,11 +87,13 @@ export default function Members() {
     // Fetch settings for grace days
     const { data: settings } = await supabase.from('settings').select('grace_days').single();
 
-    // Fetch members with plans
+    // Fetch members with plans, using pagination
     const { data, error } = await supabase
       .from('members')
       .select('*, plan:plans(*)')
-      .is('deleted_at', null);
+      .is('deleted_at', null)
+      .order('name', { ascending: true })
+      .range((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE); // Fetch one extra to check if hasMore
 
     if (error) {
       console.error(error);
@@ -93,8 +101,16 @@ export default function Members() {
       return;
     }
 
+    let results = data || [];
+    if (results.length > ITEMS_PER_PAGE) {
+      setHasMore(true);
+      results = results.slice(0, ITEMS_PER_PAGE);
+    } else {
+      setHasMore(false);
+    }
+
     // Compute status
-    const processed: Member[] = (data || []).map(m => {
+    const processed: Member[] = results.map(m => {
       const nextDue = m.current_due_date;
       return {
         ...m,
@@ -302,6 +318,24 @@ export default function Members() {
           </table>
         </div>
       )}
+
+      <div className="flex justify-between items-center pt-4">
+        <button 
+          disabled={page === 1} 
+          onClick={() => setPage(p => Math.max(1, p - 1))}
+          className="px-4 py-2 bg-gray-100 rounded-lg text-sm font-medium disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span className="text-sm text-gray-600">Page {page}</span>
+        <button 
+          disabled={!hasMore} 
+          onClick={() => setPage(p => p + 1)}
+          className="px-4 py-2 bg-gray-100 rounded-lg text-sm font-medium disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
 
       <ConfirmModal 
         isOpen={confirmConfig.isOpen}

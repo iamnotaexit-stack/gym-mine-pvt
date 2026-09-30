@@ -55,19 +55,7 @@ export default function Trash() {
     }
   };
 
-  const handleHardDelete = async (id: string) => {
-    setConfirmConfig({ isOpen: false, id: null });
-    if (import.meta.env.VITE_SUPABASE_URL === undefined) {
-      setMembers(members.filter(m => m.id !== id));
-      return;
-    }
-    const { error } = await supabase.from('members').delete().eq('id', id);
-    if (!error) {
-      setMembers(members.filter(m => m.id !== id));
-    } else {
-      alert('Failed to delete member. ' + error.message);
-    }
-  };
+  
 
   if (loading) return <div className="text-center py-12 text-gray-500 ">Loading trash...</div>;
 
@@ -100,12 +88,7 @@ export default function Trash() {
                   >
                     <RefreshCw size={16} /> Restore
                   </button>
-                  <button 
-                    onClick={() => setConfirmConfig({ isOpen: true, id: m.id })}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-red-50 text-red-700 font-medium rounded-lg hover:bg-red-100 min-h-[44px]"
-                  >
-                    <Trash2 size={16} /> Delete
-                  </button>
+                  
                 </div>
               </li>
             ))}
@@ -113,14 +96,7 @@ export default function Trash() {
         </div>
       )}
 
-      <ConfirmModal 
-        isOpen={confirmConfig.isOpen}
-        title="Permanently Delete Member"
-        message="Are you sure you want to completely delete this member? This action cannot be undone."
-        confirmText="Delete Permanently"
-        onConfirm={() => confirmConfig.id && handleHardDelete(confirmConfig.id)}
-        onCancel={() => setConfirmConfig({ isOpen: false, id: null })}
-      />
+      
     </div>
   );
 }

@@ -77,21 +77,25 @@ export default function PaymentForm() {
       note: form.note || null
     };
 
-    // Insert payment
-    const { data: payment, error } = await supabase.from('payments').insert(payload).select().single();
+    // Record payment and update member atomically via RPC
+    const { data: payment, error } = await supabase.rpc('record_payment', {
+      p_member_id: payload.member_id,
+      p_amount: payload.amount,
+      p_trainer_fee: payload.trainer_fee,
+      p_method: payload.method,
+      p_paid_on: payload.paid_on,
+      p_covers_from: payload.covers_from,
+      p_covers_to: payload.covers_to,
+      p_note: payload.note,
+      p_idempotency: crypto.randomUUID()
+    });
     
     if (error) {
       console.error(error);
-      alert('Failed to record payment');
+      alert(error.message || 'Failed to record payment');
       setLoading(false);
       return;
     }
-
-    // Update member current_due_date and unfreeze if frozen
-    await supabase.from('members').update({ 
-      current_due_date: newDueDate,
-      is_frozen: false 
-    }).eq('id', member.id);
 
     setLoading(false);
     navigate(`/receipt/${payment.id}`);

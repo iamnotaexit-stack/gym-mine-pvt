@@ -77,6 +77,23 @@ export default function MemberDetails() {
     window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
   };
 
+  const handleVoidPayment = async (paymentId: string) => {
+    const reason = prompt("Enter reason for voiding this payment:");
+    if (!reason) return;
+    
+    const { error } = await supabase.from('payments').update({ 
+      voided_at: new Date().toISOString(), 
+      void_reason: reason 
+    }).eq('id', paymentId);
+    
+    if (!error) {
+      setPayments(payments.map(p => p.id === paymentId ? { ...p, voided_at: new Date().toISOString(), void_reason: reason } : p));
+      fetchData();
+    } else {
+      alert(error.message);
+    }
+  };
+
   const toggleFreeze = async () => {
     if (!member) return;
     const { error } = await supabase.from('members').update({ is_frozen: !member.is_frozen }).eq('id', member.id);
@@ -183,11 +200,12 @@ export default function MemberDetails() {
                       <th className="p-3 font-semibold text-gray-600  text-sm">Amount</th>
                       <th className="p-3 font-semibold text-gray-600  text-sm">Covers To</th>
                       <th className="p-3 font-semibold text-gray-600  text-sm">Receipt</th>
+<th className="p-3 font-semibold text-gray-600  text-sm">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {payments.map(p => (
-                      <tr key={p.id} className="border-b border-red-100 ">
+                      <tr key={p.id} className={`border-b border-red-100 ${p.voided_at ? "opacity-50 line-through" : ""}`}>
                         <td className="p-3 text-sm">{p.paid_on}</td>
                         <td className="p-3 text-sm font-medium">₹{p.amount}</td>
                         <td className="p-3 text-sm text-gray-600 ">{p.covers_to}</td>
@@ -195,6 +213,10 @@ export default function MemberDetails() {
                           <Link to={`/receipt/${p.id}`} className="text-red-600 hover:underline flex items-center gap-1">
                             <FileText size={14} /> View
                           </Link>
+                        </td>
+                        <td className="p-3 text-sm">
+                          {!p.voided_at && <button onClick={() => handleVoidPayment(p.id)} className="text-red-600 font-bold hover:underline">Void</button>}
+                          {p.voided_at && <span className="text-xs text-gray-500">Voided: {p.void_reason}</span>}
                         </td>
                       </tr>
                     ))}
