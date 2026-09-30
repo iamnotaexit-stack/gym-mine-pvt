@@ -141,48 +141,7 @@ export default function ChaseList() {
           <p className="text-gray-600 text-sm mt-1">{t('chase_subtitle')}</p>
         </div>
 
-        {/* Quick Language Switcher for WhatsApp Reminder Message */}
-        <div className="bg-white p-2 rounded-xl border border-red-200 shadow-xs flex items-center gap-2 self-start sm:self-auto">
-          <span className="text-xs font-semibold text-gray-600 flex items-center gap-1">
-            <Sparkles size={12} className="text-red-600" />
-            {t('reminder_lang_selector')}:
-          </span>
-          <div className="flex gap-1">
-            <button
-              type="button"
-              onClick={() => setSelectedLang('as')}
-              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
-                selectedLang === 'as'
-                  ? 'bg-red-600 text-white shadow-xs'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              অসমীয়া
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedLang('hi')}
-              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
-                selectedLang === 'hi'
-                  ? 'bg-red-600 text-white shadow-xs'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              हिंदी
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedLang('en')}
-              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
-                selectedLang === 'en'
-                  ? 'bg-red-600 text-white shadow-xs'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              EN
-            </button>
-          </div>
-        </div>
+        
       </div>
 
       {items.length === 0 ? (
