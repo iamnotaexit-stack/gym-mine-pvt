@@ -102,26 +102,21 @@ export default function LanguageSelector({
 
   if (variant === 'header') {
     return (
-      <div className={`flex items-center gap-1 bg-red-800/40 p-1 rounded-lg backdrop-blur-xs ${className}`}>
-        <Globe size={14} className="text-red-200 ml-1.5 mr-0.5" />
-        {LANGUAGES.map((lang) => {
-          const isSelected = language === lang.code;
-          return (
-            <button
-              key={lang.code}
-              type="button"
-              onClick={() => setLanguage(lang.code)}
-              title={`${lang.label} (${lang.nativeName})`}
-              className={`px-2 py-1 rounded text-xs font-bold transition-all min-h-[28px] ${
-                isSelected
-                  ? 'bg-white text-red-700 shadow-xs'
-                  : 'text-red-100 hover:text-white hover:bg-red-700/50'
-              }`}
-            >
-              {lang.code === 'as' ? 'অসমীয়া' : (lang.code === 'hi' ? 'हिंदी' : 'EN')}
-            </button>
-          );
-        })}
+      <div className={`relative flex items-center bg-red-800/40 rounded-lg backdrop-blur-xs overflow-hidden ${className}`}>
+        <div className="absolute left-2 pointer-events-none text-red-200">
+          <Globe size={14} />
+        </div>
+        <select 
+          value={language}
+          onChange={(e) => setLanguage(e.target.value as Language)}
+          className="appearance-none bg-transparent text-white font-bold text-xs py-1.5 pl-7 pr-3 outline-none cursor-pointer hover:bg-red-700/50 transition-colors"
+        >
+          {LANGUAGES.map(lang => (
+            <option key={lang.code} value={lang.code} className="text-gray-900 font-sans">
+              {lang.code === 'en' ? 'EN' : (lang.code === 'hi' ? 'HI (हिंदी)' : 'AS (অসমীয়া)')}
+            </option>
+          ))}
+        </select>
       </div>
     );
   }

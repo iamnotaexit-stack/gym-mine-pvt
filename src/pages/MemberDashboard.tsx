@@ -6,7 +6,6 @@ import { computeMemberStatus } from '../lib/dates';
 import type { Member, Payment } from '../types';
 import { QRCodeSVG } from 'qrcode.react';
 import { useLanguage } from '../contexts/LanguageContext';
-import LanguageSelector from '../components/LanguageSelector';
 
 export default function MemberDashboard() {
   const { user } = useAuth();
@@ -136,8 +135,7 @@ export default function MemberDashboard() {
             <span>{regionInfo.city}, {regionInfo.state}</span>
           </div>
         </div>
-        <LanguageSelector variant="compact" />
-      </div>
+        </div>
 
       {/* Local Guwahati Greeting Banner */}
       <div className="bg-gradient-to-r from-red-600 to-orange-600 text-white p-4 rounded-xl shadow-sm flex items-center justify-between">
