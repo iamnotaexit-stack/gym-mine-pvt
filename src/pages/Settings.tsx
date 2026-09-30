@@ -9,23 +9,16 @@ import {
   Trash as TrashIcon,
   Globe,
   MapPin,
-  MessageCircle,
-  Sparkles
-} from 'lucide-react';
+  } from 'lucide-react';
 import type { Plan } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
-import type { Language } from '../lib/translations';
+
+import LanguageSelector from '../components/LanguageSelector';
 
 export default function Settings() {
   const { 
     t, 
-    language,
-    setLanguage,
-    whatsappLanguage, 
-    setWhatsappLanguage, 
-    regionInfo, 
-    getWhatsAppText 
-  } = useLanguage();
+    } = useLanguage();
 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,12 +103,10 @@ export default function Settings() {
   if (loading) return <div className="p-8 text-center text-gray-500">{t('loading')}</div>;
 
   // Language-appropriate sample name to avoid mixed-script font rendering glitches
-  const sampleMemberName = whatsappLanguage === 'as' 
-    ? 'ৰাহুল শৰ্মা' 
-    : (whatsappLanguage === 'hi' ? 'राहुल शर्मा' : 'Rahul Sharma');
+  
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-12">
+    <div className="max-w-4xl mx-auto sm:space-y-8 pb-12 bg-gray-50 sm:bg-transparent">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('settings_title')}</h1>
@@ -128,30 +119,16 @@ export default function Settings() {
 
       
       {/* 0. APP SETTINGS */}
-      <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6">
-        <h2 className="text-lg font-bold border-b border-red-100 pb-2 flex items-center gap-2 text-gray-900">
-          <Globe size={20} className="text-red-600" /> App UI Language
-        </h2>
-        <div className="flex gap-2">
-          {(['en', 'hi', 'as'] as Language[]).map((l) => (
-            <button
-              key={l}
-              type="button"
-              onClick={() => setLanguage(l)}
-              className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
-                language === l
-                  ? 'bg-red-600 text-white shadow-xs'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {l === 'as' ? 'অসমীয়া (Local)' : (l === 'hi' ? 'हिंदी' : 'English')}
-            </button>
-          ))}
+      <div className="bg-white sm:rounded-xl sm:border sm:border-red-200 sm:shadow-sm sm:p-6 p-4 border-b sm:border-none border-gray-100 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-gray-900 font-semibold">
+          <Globe size={18} className="text-gray-400" />
+          <span>App UI Language</span>
         </div>
+        <LanguageSelector variant="compact" />
       </div>
 
       {/* 1. GENERAL SETTINGS */}
-      <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6">
+      <div className="bg-white sm:rounded-xl sm:border sm:border-red-200 sm:shadow-sm sm:p-6 p-4 border-b sm:border-none border-gray-100 space-y-6">
         <h2 className="text-lg font-bold border-b border-red-100 pb-2 flex items-center gap-2 text-gray-900">
           <SettingsIcon size={20} className="text-red-600" /> {t('general_settings')}
         </h2>
@@ -183,86 +160,8 @@ export default function Settings() {
         </button>
       </div>
 
-      {/* 2. REGIONAL & WHATSAPP REMINDERS (GUWAHATI, ASSAM) */}
-      <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6">
-        <div className="border-b border-red-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <h2 className="text-lg font-bold flex items-center gap-2 text-gray-900">
-              <MessageCircle size={20} className="text-red-600" /> {t('regional_whatsapp_title')}
-            </h2>
-            <p className="text-xs text-gray-600 mt-1">
-              {t('regional_whatsapp_desc')}
-            </p>
-          </div>
-          <span className="text-xs px-2.5 py-1 bg-gradient-to-r from-red-600 to-orange-600 text-white font-bold rounded-full w-max flex items-center gap-1 shadow-xs">
-            <Sparkles size={12} /> Guwahati Local Touch
-          </span>
-        </div>
-
-        {/* Regional Info Banner for Guwahati */}
-        <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-              <MapPin size={14} className="text-red-600" /> {t('region_label')}: {regionInfo.city}, {regionInfo.state}
-            </span>
-            <span className="text-xs text-gray-500 font-mono">Pin: {regionInfo.pinCodes}</span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-            <div className="bg-white p-3 rounded-lg border border-gray-200">
-              <div className="text-xs text-gray-500 font-medium">{t('local_greeting_label')}</div>
-              <div className="text-base font-bold text-red-700 mt-0.5">{regionInfo.localGreeting}</div>
-            </div>
-            <div className="bg-white p-3 rounded-lg border border-gray-200">
-              <div className="text-xs text-gray-500 font-medium">{t('tagline_label')}</div>
-              <div className="text-sm font-medium text-gray-800 mt-0.5">{regionInfo.tagline}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* WhatsApp Reminder Default Language Preference */}
-        <div className="pt-2 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <label className="block text-sm font-semibold text-gray-800">
-                {t('whatsapp_language_pref')}
-              </label>
-              <p className="text-xs text-gray-500">
-                {t('whatsapp_lang_desc')}
-              </p>
-            </div>
-            <div className="flex gap-2">
-              {(['as', 'hi', 'en'] as Language[]).map((l) => (
-                <button
-                  key={l}
-                  type="button"
-                  onClick={() => setWhatsappLanguage(l)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                    whatsappLanguage === l
-                      ? 'bg-red-600 text-white shadow-xs'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {l === 'as' ? 'অসমীয়া (Local)' : (l === 'hi' ? 'हिंदी' : 'English')}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Sample Message Preview Card */}
-          <div className="bg-red-50/50 p-4 rounded-xl border border-red-100 space-y-2">
-            <div className="flex items-center gap-2 text-xs font-bold text-red-800">
-              <MessageCircle size={15} />
-              <span>{t('template_preview_title')} ({whatsappLanguage === 'as' ? 'অসমীয়া' : (whatsappLanguage === 'hi' ? 'हिंदी' : 'English')})</span>
-            </div>
-            <div className="p-3 bg-white rounded-lg border border-red-200 text-xs sm:text-sm text-gray-800 font-sans shadow-xs whitespace-pre-line leading-relaxed">
-              {getWhatsAppText(sampleMemberName, '2026-10-05', -3, whatsappLanguage)}
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* 3. PLANS MANAGEMENT */}
-      <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6">
+      <div className="bg-white sm:rounded-xl sm:border sm:border-red-200 sm:shadow-sm sm:p-6 p-4 border-b sm:border-none border-gray-100 space-y-6">
         <h2 className="text-lg font-bold border-b border-red-100 pb-2 text-gray-900">{t('manage_plans')}</h2>
         
         <div className="space-y-3">
@@ -303,7 +202,7 @@ export default function Settings() {
       </div>
 
       {/* 4. SUBADMINS MANAGEMENT */}
-      <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6">
+      <div className="bg-white sm:rounded-xl sm:border sm:border-red-200 sm:shadow-sm sm:p-6 p-4 border-b sm:border-none border-gray-100 space-y-6">
         <div>
           <h2 className="text-lg font-bold border-b border-red-100 pb-2 text-gray-900">{t('subadmins_title')}</h2>
           <p className="text-xs text-gray-500 mt-1">{t('subadmins_desc')}</p>
@@ -338,7 +237,7 @@ export default function Settings() {
       </div>
 
       {/* 5. ADMIN TOOLS */}
-      <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-4">
+      <div className="bg-white sm:rounded-xl sm:border sm:border-red-200 sm:shadow-sm sm:p-6 p-4 border-b sm:border-none border-gray-100 space-y-4">
         <h2 className="text-lg font-bold border-b border-red-100 pb-2 text-gray-900">
           {t('admin_tools')}
         </h2>
