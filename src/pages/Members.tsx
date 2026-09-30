@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { supabase } from '../lib/supabase';
 import type { Member } from '../types';
 import { computeMemberStatus } from '../lib/dates';
@@ -18,6 +19,8 @@ export default function Members() {
   const [filter, setFilter] = useState<FilterType>('All');
   const [confirmConfig, setConfirmConfig] = useState<{ isOpen: boolean, type: 'archive' | 'trainer', id: string | null }>({ isOpen: false, type: 'archive', id: null });
   const navigate = useNavigate();
+  const [parentRef] = useAutoAnimate();
+  const [tableRef] = useAutoAnimate();
 
   const handleArchive = async (id: string) => {
     setConfirmConfig({ isOpen: false, type: 'archive', id: null });
@@ -206,7 +209,7 @@ export default function Members() {
       {loading ? (
         <div className="text-center py-12 text-gray-500">{t('loading')}</div>
       ) : (
-        <div className="grid grid-cols-1 md:hidden gap-3">
+        <div className="grid grid-cols-1 md:hidden gap-3" ref={parentRef}>
           {filtered.map(m => (
             <div key={m.id} onClick={() => navigate(`/members/${m.id}`)} className="cursor-pointer bg-white p-4 rounded-xl border border-red-200 shadow-sm hover:border-red-300 transition-colors">
               <div className="flex justify-between items-start mb-2">
@@ -264,7 +267,7 @@ export default function Members() {
                 <th className="p-4 font-semibold text-gray-600 text-right">{t('actions')}</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody ref={tableRef}>
               {filtered.map(m => (
                 <tr key={m.id} className="border-b border-red-100 hover:bg-red-50/50 transition-colors">
                   <td className="p-4">

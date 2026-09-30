@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { supabase } from '../lib/supabase';
 import type { Member } from '../types';
 import { getCurrentISTDateString, calculateNextDueDate } from '../lib/dates';
@@ -16,6 +17,7 @@ export default function ChaseList() {
   const { t, getWhatsAppText, whatsappLanguage } = useLanguage();
   const [items, setItems] = useState<ChaseItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [listRef] = useAutoAnimate();
   const [confirmConfig, setConfirmConfig] = useState<{ isOpen: boolean, item: ChaseItem | null, method: 'cash' | 'upi' }>({ isOpen: false, item: null, method: 'cash' });
   
   useEffect(() => {
@@ -148,7 +150,7 @@ export default function ChaseList() {
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-red-200 overflow-hidden shadow-sm">
-          <ul className="divide-y divide-gray-100">
+          <ul className="divide-y divide-gray-100" ref={listRef}>
             {items.map((item, idx) => (
               <li key={`${item.member.id}-${idx}`} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50/50 transition-colors">
                 <div>

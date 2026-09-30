@@ -4,6 +4,7 @@ import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import LanguageSelector from './components/LanguageSelector';
 import { LogOut, Users, Settings as SettingsIcon, Trash2, ListChecks, BarChart2, History, MapPin } from 'lucide-react';
 import React, { Suspense, useState } from 'react';
+import { motion } from 'framer-motion';
 import Members from './pages/Members';
 
 // Code split other routes to keep main bundle tiny
@@ -120,8 +121,14 @@ function Layout({ children }: { children: React.ReactNode }) {
       </nav>
 
       <main className="flex-1 w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 min-w-0">
-        <Suspense fallback={<div className="p-8 text-center text-gray-500">{t('loading')}</div>}>
-          {children}
+        <Suspense fallback={<div className="p-8 text-center text-gray-500 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div></div>}>
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
+            {children}
+          </motion.div>
         </Suspense>
       </main>
     </div>
