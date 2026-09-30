@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Member } from '../types';
-import { Trash2, RefreshCw, ArrowLeft } from 'lucide-react';
-import ConfirmModal from '../components/ConfirmModal';
+import {  RefreshCw, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Trash() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
-  const [confirmConfig, setConfirmConfig] = useState<{ isOpen: boolean, id: string | null }>({ isOpen: false, id: null });
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
   useEffect(() => {
     fetchArchived();

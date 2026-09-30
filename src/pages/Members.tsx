@@ -4,7 +4,6 @@ import type { Member } from '../types';
 import { computeMemberStatus } from '../lib/dates';
 import { Search, Plus, Filter, Edit, Trash2, UserCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { mockMembers } from '../lib/mockData';
 import ConfirmModal from '../components/ConfirmModal';
 import { useLanguage } from '../contexts/LanguageContext';

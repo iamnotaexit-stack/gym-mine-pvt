@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Member } from '../types';
 import { getCurrentISTDateString, calculateNextDueDate } from '../lib/dates';
-import { CheckCircle, MessageCircle, Banknote, QrCode, Sparkles } from 'lucide-react';
+import { CheckCircle, MessageCircle, Banknote, QrCode } from 'lucide-react';
 import ConfirmModal from '../components/ConfirmModal';
 import { useLanguage } from '../contexts/LanguageContext';
-import type { Language } from '../lib/translations';
 
 interface ChaseItem {
   member: Member;
@@ -18,8 +17,7 @@ export default function ChaseList() {
   const [items, setItems] = useState<ChaseItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmConfig, setConfirmConfig] = useState<{ isOpen: boolean, item: ChaseItem | null, method: 'cash' | 'upi' }>({ isOpen: false, item: null, method: 'cash' });
-  const [selectedLang, setSelectedLang] = useState<Language>(whatsappLanguage || 'as');
-
+  
   useEffect(() => {
     fetchChaseList();
   }, []);
@@ -93,7 +91,7 @@ export default function ChaseList() {
 
   const handleWhatsApp = (item: ChaseItem) => {
     const phone = item.member.phone.replace('+', '');
-    const reminderMsg = getWhatsAppText(item.member.name, item.member.current_due_date, item.offset, selectedLang);
+    const reminderMsg = getWhatsAppText(item.member.name, item.member.current_due_date, item.offset, whatsappLanguage);
     const msg = encodeURIComponent(reminderMsg);
     window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     
@@ -174,7 +172,7 @@ export default function ChaseList() {
                     <button 
                       onClick={() => handleWhatsApp(item)}
                       className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 min-h-[44px] transition-colors shadow-xs"
-                      title={`Send WhatsApp reminder in ${selectedLang === 'as' ? 'Assamese' : (selectedLang === 'hi' ? 'Hindi' : 'English')}`}
+                      title={`Send WhatsApp reminder in ${whatsappLanguage === 'as' ? 'Assamese' : (whatsappLanguage === 'hi' ? 'Hindi' : 'English')}`}
                     >
                       <MessageCircle size={18} /> {t('send_whatsapp')}
                     </button>
