@@ -8,7 +8,6 @@ import {
   Save, 
   Trash as TrashIcon,
   Globe,
-  MapPin,
   } from 'lucide-react';
 import type { Plan } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -115,9 +114,7 @@ export default function Settings() {
           <h1 className="text-2xl font-bold text-gray-900">{t('settings_title')}</h1>
           <p className="text-sm text-gray-500 mt-1">{t('settings_subtitle')}</p>
         </div>
-        <div className="flex items-center gap-2 bg-red-50 text-red-700 px-3 py-1.5 rounded-lg border border-red-100 text-xs font-semibold self-start sm:self-auto">
-          <MapPin size={14} /> Guwahati, Assam
-        </div>
+        
       </div>
 
       
