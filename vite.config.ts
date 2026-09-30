@@ -10,22 +10,26 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['icon.svg', 'favicon.svg'],
       manifest: {
-        name: 'Gym Addict 2.0 Gym',
+        name: 'Gym Addict 2.0',
         short_name: 'Gym Addict 2.0',
-        theme_color: '#4f46e5',
+        description: 'Manage your gym members and payments easily.',
+        theme_color: '#b91c1c',
+        background_color: '#ffffff',
+        display: 'standalone',
+        orientation: 'portrait',
         icons: [
           {
-            src: '/icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: '/icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
+            src: '/icon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable'
           }
         ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
       }
     })
   ],
