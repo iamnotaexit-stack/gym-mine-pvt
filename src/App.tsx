@@ -1,6 +1,8 @@
 import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { LogOut, Users, Settings as SettingsIcon, Trash2, ListChecks, BarChart2, History } from 'lucide-react';
+import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
+import LanguageSelector from './components/LanguageSelector';
+import { LogOut, Users, Settings as SettingsIcon, Trash2, ListChecks, BarChart2, History, MapPin } from 'lucide-react';
 import React, { Suspense, useState } from 'react';
 import Members from './pages/Members';
 
@@ -27,12 +29,30 @@ function ProtectedRoute({ children, requireOwner = false }: { children: React.Re
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { signOut, role } = useAuth();
+  const { t } = useLanguage();
   
+  const roleLabel = role === 'owner' ? t('role_owner') : (role === 'subadmin' ? t('role_subadmin') : t('role_member'));
+
   return (
     <div className="min-h-screen flex flex-col sm:flex-row bg-white pb-16 sm:pb-0">
       <header className="bg-red-700 text-white p-4 flex sm:flex-col justify-between sm:justify-start items-center sm:items-stretch shadow-md sm:w-64 sm:h-screen sm:sticky top-0 z-10 shrink-0">
-        <div className="flex justify-between w-full items-center sm:mb-8">
-          <h1 className="font-bold text-xl sm:text-2xl text-center sm:text-left">Gym Addict 2.0</h1>
+        <div className="flex flex-col w-full sm:mb-4">
+          <div className="flex justify-between items-center w-full">
+            <div>
+              <h1 className="font-bold text-xl sm:text-2xl text-left leading-tight">{t('app_title')}</h1>
+              <div className="flex items-center gap-1 text-[11px] text-red-100 font-medium mt-0.5">
+                <MapPin size={11} className="shrink-0 text-red-200" />
+                <span>{t('app_subtitle')}</span>
+              </div>
+            </div>
+            <div className="sm:hidden">
+              <LanguageSelector variant="header" />
+            </div>
+          </div>
+        </div>
+
+        <div className="hidden sm:block mb-4">
+          <LanguageSelector variant="header" className="w-full justify-center" />
         </div>
         
         {/* Desktop Nav Rail / Sidebar */}
@@ -40,35 +60,35 @@ function Layout({ children }: { children: React.ReactNode }) {
           {role !== 'member' && (
             <>
               <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-50">
-                <Users size={20} /> <span className="hidden md:inline font-medium">Members</span>
+                <Users size={20} /> <span className="hidden md:inline font-medium">{t('nav_members')}</span>
               </Link>
               <Link to="/chase" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-50">
-                <ListChecks size={20} /> <span className="hidden md:inline font-medium">Chase List</span>
+                <ListChecks size={20} /> <span className="hidden md:inline font-medium">{t('nav_chase')}</span>
               </Link>
             </>
           )}
           {role === 'owner' && (
             <>
               <Link to="/stats" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-50">
-                <BarChart2 size={20} /> <span className="hidden md:inline font-medium">Stats</span>
+                <BarChart2 size={20} /> <span className="hidden md:inline font-medium">{t('nav_stats')}</span>
               </Link>
               <Link to="/trash" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-50">
-                <Trash2 size={20} /> <span className="hidden md:inline font-medium">Trash</span>
+                <Trash2 size={20} /> <span className="hidden md:inline font-medium">{t('nav_trash')}</span>
               </Link>
               <Link to="/activity" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-50">
-                <History size={20} /> <span className="hidden md:inline font-medium">Activity</span>
+                <History size={20} /> <span className="hidden md:inline font-medium">{t('nav_activity')}</span>
               </Link>
               <Link to="/settings" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-600 transition-colors text-red-50">
-                <SettingsIcon size={20} /> <span className="hidden md:inline font-medium">Settings</span>
+                <SettingsIcon size={20} /> <span className="hidden md:inline font-medium">{t('nav_settings')}</span>
               </Link>
             </>
           )}
         </nav>
 
         <div className="flex sm:flex-col items-center sm:items-start gap-4 sm:gap-2 sm:mt-auto">
-          <div className="text-xs opacity-80 uppercase font-semibold tracking-wider">{role}</div>
+          <div className="text-xs opacity-80 uppercase font-semibold tracking-wider">{roleLabel}</div>
           <button onClick={signOut} className="p-2 sm:px-3 sm:py-2 sm:w-full flex items-center justify-center sm:justify-start gap-2 hover:bg-red-600 rounded-full sm:rounded-lg transition-colors text-red-50">
-            <LogOut size={20} /> <span className="hidden md:inline font-medium">Log out</span>
+            <LogOut size={20} /> <span className="hidden md:inline font-medium">{t('nav_logout')}</span>
           </button>
         </div>
       </header>
@@ -79,11 +99,11 @@ function Layout({ children }: { children: React.ReactNode }) {
           <>
             <Link to="/" className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-600">
               <Users size={24} />
-              <span className="text-[10px] font-medium mt-1">Members</span>
+              <span className="text-[10px] font-medium mt-1">{t('nav_members')}</span>
             </Link>
             <Link to="/chase" className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-600">
               <ListChecks size={24} />
-              <span className="text-[10px] font-medium mt-1">Chase</span>
+              <span className="text-[10px] font-medium mt-1">{t('nav_chase')}</span>
             </Link>
           </>
         )}
@@ -91,18 +111,18 @@ function Layout({ children }: { children: React.ReactNode }) {
           <>
             <Link to="/stats" className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-600">
               <BarChart2 size={24} />
-              <span className="text-[10px] font-medium mt-1">Stats</span>
+              <span className="text-[10px] font-medium mt-1">{t('nav_stats')}</span>
             </Link>
             <Link to="/settings" className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-600">
               <SettingsIcon size={24} />
-              <span className="text-[10px] font-medium mt-1">Settings</span>
+              <span className="text-[10px] font-medium mt-1">{t('nav_settings')}</span>
             </Link>
           </>
         )}
       </nav>
 
       <main className="flex-1 w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 min-w-0">
-        <Suspense fallback={<div className="p-8 text-center text-gray-500 ">Loading...</div>}>
+        <Suspense fallback={<div className="p-8 text-center text-gray-500">{t('loading')}</div>}>
           {children}
         </Suspense>
       </main>
@@ -112,6 +132,7 @@ function Layout({ children }: { children: React.ReactNode }) {
 
 function Login() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -147,12 +168,15 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <form onSubmit={handleLogin} className="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm border border-red-100">
-        <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-sm">
-            FP
+        <div className="flex justify-between items-center mb-4">
+          <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-sm">
+            GA
           </div>
+          <LanguageSelector variant="compact" />
         </div>
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-900">Gym Addict 2.0 Login</h2>
+        
+        <h2 className="text-2xl font-bold text-center mb-1 text-gray-900">{t('app_title')}</h2>
+        <p className="text-xs text-center text-gray-500 mb-6">{t('app_subtitle')}</p>
         
         {/* Tabs */}
         <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
@@ -214,24 +238,26 @@ import { ErrorBoundary } from './ErrorBoundary';
 function App() {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<ProtectedRoute><Layout><RootRoute /></Layout></ProtectedRoute>} />
-          <Route path="/members/add" element={<ProtectedRoute><Layout><MemberForm /></Layout></ProtectedRoute>} />
-          <Route path="/members/:id" element={<ProtectedRoute><Layout><MemberDetails /></Layout></ProtectedRoute>} />
-          <Route path="/members/:id/edit" element={<ProtectedRoute><Layout><MemberForm /></Layout></ProtectedRoute>} />
-          <Route path="/payments/add/:memberId" element={<ProtectedRoute requireOwner><Layout><PaymentForm /></Layout></ProtectedRoute>} />
-          <Route path="/receipt/:id" element={<ProtectedRoute><Layout><Receipt /></Layout></ProtectedRoute>} />
-          <Route path="/chase" element={<ProtectedRoute><Layout><ChaseList /></Layout></ProtectedRoute>} />
-          <Route path="/stats" element={<ProtectedRoute requireOwner><Layout><Stats /></Layout></ProtectedRoute>} />
-          <Route path="/trash" element={<ProtectedRoute requireOwner><Layout><Trash /></Layout></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute requireOwner><Layout><Settings /></Layout></ProtectedRoute>} />
-          <Route path="/activity" element={<ProtectedRoute requireOwner><Layout><ActivityLog /></Layout></ProtectedRoute>} />
-        </Routes>
-        </Router>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <Router>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<ProtectedRoute><Layout><RootRoute /></Layout></ProtectedRoute>} />
+              <Route path="/members/add" element={<ProtectedRoute><Layout><MemberForm /></Layout></ProtectedRoute>} />
+              <Route path="/members/:id" element={<ProtectedRoute><Layout><MemberDetails /></Layout></ProtectedRoute>} />
+              <Route path="/members/:id/edit" element={<ProtectedRoute><Layout><MemberForm /></Layout></ProtectedRoute>} />
+              <Route path="/payments/add/:memberId" element={<ProtectedRoute requireOwner><Layout><PaymentForm /></Layout></ProtectedRoute>} />
+              <Route path="/receipt/:id" element={<ProtectedRoute><Layout><Receipt /></Layout></ProtectedRoute>} />
+              <Route path="/chase" element={<ProtectedRoute><Layout><ChaseList /></Layout></ProtectedRoute>} />
+              <Route path="/stats" element={<ProtectedRoute requireOwner><Layout><Stats /></Layout></ProtectedRoute>} />
+              <Route path="/trash" element={<ProtectedRoute requireOwner><Layout><Trash /></Layout></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute requireOwner><Layout><Settings /></Layout></ProtectedRoute>} />
+              <Route path="/activity" element={<ProtectedRoute requireOwner><Layout><ActivityLog /></Layout></ProtectedRoute>} />
+            </Routes>
+          </Router>
+        </AuthProvider>
+      </LanguageProvider>
     </ErrorBoundary>
   );
 }

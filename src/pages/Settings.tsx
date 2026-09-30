@@ -1,9 +1,34 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Settings as SettingsIcon, History, Trash2, Plus, Save, Trash as TrashIcon } from 'lucide-react';
+import { 
+  Settings as SettingsIcon, 
+  History, 
+  Trash2, 
+  Plus, 
+  Save, 
+  Trash as TrashIcon,
+  Globe,
+  MapPin,
+  MessageCircle,
+  Sparkles,
+  CheckCircle2
+} from 'lucide-react';
 import type { Plan } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
+import LanguageSelector from '../components/LanguageSelector';
+import type { Language } from '../lib/translations';
 
 export default function Settings() {
+  const { 
+    t, 
+    language, 
+    setLanguage, 
+    whatsappLanguage, 
+    setWhatsappLanguage, 
+    regionInfo, 
+    getWhatsAppText 
+  } = useLanguage();
+
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -54,7 +79,7 @@ export default function Settings() {
       group_url_general: generalGroup,
       group_url_trainer: trainerGroup
     }).eq('id', (await supabase.from('settings').select('id').single()).data?.id);
-    alert('Settings saved!');
+    alert(t('saved_alert'));
   };
 
   const handleAddPlan = async (e: React.FormEvent) => {
@@ -78,66 +103,193 @@ export default function Settings() {
   const handleInviteSubadmin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // We reuse the edge function but pass role! Actually, our edge function forces 'member'.
-      // For now, let's just alert that it requires Edge Function updates.
       alert("Inviting sub-admins requires backend configuration for permissions. For now, you can add them via Supabase Dashboard directly!");
     } catch (err) {
       console.error(err);
     }
   };
 
-  if (loading) return <div className="p-8 text-center text-gray-500">Loading settings...</div>;
+  if (loading) return <div className="p-8 text-center text-gray-500">{t('loading')}</div>;
+
+  const currentLangLabel = language === 'as' 
+    ? 'অসমীয়া (Assamese - Guwahati)' 
+    : (language === 'hi' ? 'हिंदी (Hindi)' : 'English (Global)');
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
-      <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">{t('settings_title')}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t('settings_subtitle')}</p>
+        </div>
+        <div className="flex items-center gap-2 bg-red-50 text-red-700 px-3 py-1.5 rounded-lg border border-red-100 text-xs font-semibold self-start sm:self-auto">
+          <MapPin size={14} /> Guwahati, Assam
+        </div>
+      </div>
 
-      {/* General Settings */}
+      {/* 1. GENERAL SETTINGS WITH EXPLICIT UI LANGUAGE DROPDOWN */}
       <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6">
         <h2 className="text-lg font-bold border-b border-red-100 pb-2 flex items-center gap-2 text-gray-900">
-          <SettingsIcon size={20} className="text-red-600" /> General Settings
+          <SettingsIcon size={20} className="text-red-600" /> {t('general_settings')}
         </h2>
         
+        {/* Prominent UI Language Selector Field in General Settings */}
+        <div className="bg-red-50/70 p-4 rounded-xl border border-red-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <label htmlFor="ui-language-select" className="block text-sm font-bold text-gray-900 flex items-center gap-2">
+                <Globe size={18} className="text-red-600" />
+                {t('ui_language')}
+              </label>
+              <p className="text-xs text-gray-600 mt-0.5">
+                {t('ui_language_desc')}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <select
+                id="ui-language-select"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as Language)}
+                className="bg-white px-4 py-2 rounded-lg border border-red-300 font-bold text-sm text-gray-900 focus:ring-2 focus:ring-red-500 shadow-xs cursor-pointer min-h-[42px]"
+              >
+                <option value="en">English (Global)</option>
+                <option value="as">অসমীয়া (Assamese - গুৱাহাটী, অসম)</option>
+                <option value="hi">हिंदी (Hindi)</option>
+              </select>
+            </div>
+          </div>
+          <div className="mt-3 pt-2 border-t border-red-100 text-xs text-red-700 font-medium flex items-center gap-1.5">
+            <CheckCircle2 size={14} className="text-green-600 shrink-0" />
+            <span>{t('active_language_indicator', { lang: currentLangLabel })}</span>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Gym Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('gym_name')}</label>
             <input type="text" value={gymName} onChange={e => setGymName(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Grace Period (Days)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('grace_days')}</label>
             <input type="number" value={graceDays} onChange={e => setGraceDays(parseInt(e.target.value))} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Global Admission Fee (₹)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('admission_fee')}</label>
             <input type="number" value={admissionFee} onChange={e => setAdmissionFee(parseInt(e.target.value))} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">General WhatsApp Group URL</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('general_group')}</label>
             <input type="url" placeholder="https://chat.whatsapp.com/..." value={generalGroup} onChange={e => setGeneralGroup(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Trainer WhatsApp Group URL</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('trainer_group')}</label>
             <input type="url" placeholder="https://chat.whatsapp.com/..." value={trainerGroup} onChange={e => setTrainerGroup(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
           </div>
         </div>
-        <button onClick={handleSaveSettings} className="bg-gray-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 flex items-center gap-2">
-          <Save size={18} /> Save Settings
+        <button onClick={handleSaveSettings} className="bg-gray-900 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-gray-800 flex items-center gap-2 shadow-xs transition-colors">
+          <Save size={18} /> {t('save_settings_btn')}
         </button>
       </div>
 
-      {/* Plans Management */}
+      {/* 2. DEDICATED REGIONAL & LANGUAGE TOUCH SECTION */}
+      <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6 ring-1 ring-red-500/10">
+        <div className="border-b border-red-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-lg font-bold flex items-center gap-2 text-gray-900">
+              <Globe size={20} className="text-red-600" /> {t('language_section_title')}
+            </h2>
+            <p className="text-xs text-gray-600 mt-1">
+              {t('language_section_desc')}
+            </p>
+          </div>
+          <span className="text-xs px-2.5 py-1 bg-gradient-to-r from-red-600 to-orange-600 text-white font-bold rounded-full w-max flex items-center gap-1 shadow-xs">
+            <Sparkles size={12} /> Guwahati Local Touch
+          </span>
+        </div>
+
+        {/* Interactive Trilingual Language Cards */}
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-gray-700">
+            {t('language_label')}
+          </label>
+          <LanguageSelector variant="cards" showRegionBadge />
+        </div>
+
+        {/* Regional Info Banner for Guwahati */}
+        <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+              <MapPin size={14} className="text-red-600" /> {t('region_label')}: {regionInfo.city}, {regionInfo.state}
+            </span>
+            <span className="text-xs text-gray-500 font-mono">Pin: {regionInfo.pinCodes}</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <div className="bg-white p-3 rounded-lg border border-gray-200">
+              <div className="text-xs text-gray-500 font-medium">{t('local_greeting_label')}</div>
+              <div className="text-base font-bold text-red-700 mt-0.5">{regionInfo.localGreeting}</div>
+            </div>
+            <div className="bg-white p-3 rounded-lg border border-gray-200">
+              <div className="text-xs text-gray-500 font-medium">{t('tagline_label')}</div>
+              <div className="text-sm font-medium text-gray-800 mt-0.5">{regionInfo.tagline}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* WhatsApp Reminder Default Language Preference */}
+        <div className="pt-4 border-t border-gray-100 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <label className="block text-sm font-semibold text-gray-800">
+                {t('whatsapp_language_pref')}
+              </label>
+              <p className="text-xs text-gray-500">
+                {t('whatsapp_lang_desc')}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              {(['as', 'hi', 'en'] as Language[]).map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setWhatsappLanguage(l)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    whatsappLanguage === l
+                      ? 'bg-red-600 text-white shadow-xs'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {l === 'as' ? 'অসমীয়া (Local)' : (l === 'hi' ? 'हिंदी' : 'English')}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Sample Message Preview Card */}
+          <div className="bg-red-50/50 p-4 rounded-xl border border-red-100 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold text-red-800">
+              <MessageCircle size={15} />
+              <span>{t('template_preview_title')} ({whatsappLanguage === 'as' ? 'অসমীয়া' : (whatsappLanguage === 'hi' ? 'हिंदी' : 'English')})</span>
+            </div>
+            <div className="p-3 bg-white rounded-lg border border-red-200 text-xs sm:text-sm text-gray-800 font-sans shadow-xs whitespace-pre-line leading-relaxed">
+              {getWhatsAppText('ৰাহুল শৰ্মা (Rahul)', '2026-10-05', -3, whatsappLanguage)}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. PLANS MANAGEMENT */}
       <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6">
-        <h2 className="text-lg font-bold border-b border-red-100 pb-2 text-gray-900">Manage Plans</h2>
+        <h2 className="text-lg font-bold border-b border-red-100 pb-2 text-gray-900">{t('manage_plans')}</h2>
         
         <div className="space-y-3">
           {plans.length === 0 ? (
-            <p className="text-gray-500 text-sm">No plans created yet.</p>
+            <p className="text-gray-500 text-sm">{t('no_plans_yet')}</p>
           ) : (
             plans.map(p => (
               <div key={p.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <div>
                   <div className="font-bold text-gray-900">{p.name}</div>
-                  <div className="text-sm text-gray-600">{p.months} Months | ₹{p.price}</div>
+                  <div className="text-sm text-gray-600">{p.months} {t('months')} | ₹{p.price}</div>
                 </div>
                 <button onClick={() => handleDeletePlan(p.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                   <TrashIcon size={18} />
@@ -149,30 +301,33 @@ export default function Settings() {
 
         <form onSubmit={handleAddPlan} className="pt-4 border-t border-gray-100 flex flex-col md:flex-row gap-4 items-end">
           <div className="flex-1 w-full">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Plan Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('plan_name')}</label>
             <input required type="text" placeholder="e.g. 3 Months Pro" value={newPlan.name} onChange={e => setNewPlan({...newPlan, name: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
           </div>
           <div className="w-full md:w-32">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Months</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('months')}</label>
             <input required type="number" min="1" value={newPlan.months} onChange={e => setNewPlan({...newPlan, months: parseInt(e.target.value)})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
           </div>
           <div className="w-full md:w-32">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('price')}</label>
             <input required type="number" min="0" value={newPlan.price} onChange={e => setNewPlan({...newPlan, price: parseInt(e.target.value)})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
           </div>
-          <button type="submit" className="w-full md:w-auto bg-red-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-700 flex items-center justify-center gap-2 h-[42px]">
-            <Plus size={18} /> Add Plan
+          <button type="submit" className="w-full md:w-auto bg-red-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-700 flex items-center justify-center gap-2 h-[42px] transition-colors">
+            <Plus size={18} /> {t('add_plan')}
           </button>
         </form>
       </div>
 
-      {/* Subadmins Management */}
+      {/* 4. SUBADMINS MANAGEMENT */}
       <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-6">
-        <h2 className="text-lg font-bold border-b border-red-100 pb-2 text-gray-900">Sub-Admins / Trainers</h2>
+        <div>
+          <h2 className="text-lg font-bold border-b border-red-100 pb-2 text-gray-900">{t('subadmins_title')}</h2>
+          <p className="text-xs text-gray-500 mt-1">{t('subadmins_desc')}</p>
+        </div>
         
         <div className="space-y-3">
           {subadmins.length === 0 ? (
-            <p className="text-gray-500 text-sm">No sub-admins found.</p>
+            <p className="text-gray-500 text-sm">{t('no_subadmins_yet')}</p>
           ) : (
             subadmins.map(s => (
               <div key={s.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -185,23 +340,23 @@ export default function Settings() {
 
         <form onSubmit={handleInviteSubadmin} className="pt-4 border-t border-gray-100 flex flex-col md:flex-row gap-4 items-end">
           <div className="flex-1 w-full">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('trainer_name_label')}</label>
             <input required type="text" placeholder="Trainer Name" value={newSubadminName} onChange={e => setNewSubadminName(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
           </div>
           <div className="flex-1 w-full">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('trainer_email_label')}</label>
             <input required type="email" placeholder="trainer@gym.com" value={newSubadminEmail} onChange={e => setNewSubadminEmail(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500" />
           </div>
-          <button type="submit" className="w-full md:w-auto bg-gray-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 flex items-center justify-center gap-2 h-[42px]">
-            <Plus size={18} /> Invite
+          <button type="submit" className="w-full md:w-auto bg-gray-900 text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 flex items-center justify-center gap-2 h-[42px] transition-colors">
+            <Plus size={18} /> {t('invite_btn')}
           </button>
         </form>
       </div>
 
-      {/* Admin Tools */}
+      {/* 5. ADMIN TOOLS */}
       <div className="bg-white p-6 rounded-xl border border-red-200 shadow-sm space-y-4">
         <h2 className="text-lg font-bold border-b border-red-100 pb-2 text-gray-900">
-          Admin Tools
+          {t('admin_tools')}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <a href="/#/activity" className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-colors">
@@ -209,8 +364,8 @@ export default function Settings() {
               <History size={20} />
             </div>
             <div>
-              <div className="font-bold text-gray-900">Activity Log</div>
-              <div className="text-sm text-gray-500">View recent actions</div>
+              <div className="font-bold text-gray-900">{t('nav_activity')}</div>
+              <div className="text-sm text-gray-500">{t('activity_log_desc')}</div>
             </div>
           </a>
           
@@ -219,8 +374,8 @@ export default function Settings() {
               <Trash2 size={20} />
             </div>
             <div>
-              <div className="font-bold text-gray-900">Trash / Archive</div>
-              <div className="text-sm text-gray-500">Restore or delete members</div>
+              <div className="font-bold text-gray-900">{t('nav_trash')}</div>
+              <div className="text-sm text-gray-500">{t('trash_desc')}</div>
             </div>
           </a>
         </div>

@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Member } from '../types';
 import { getCurrentISTDateString, calculateNextDueDate } from '../lib/dates';
-import { CheckCircle, MessageCircle, Banknote, QrCode } from 'lucide-react';
+import { CheckCircle, MessageCircle, Banknote, QrCode, Sparkles } from 'lucide-react';
 import ConfirmModal from '../components/ConfirmModal';
+import { useLanguage } from '../contexts/LanguageContext';
+import type { Language } from '../lib/translations';
 
 interface ChaseItem {
   member: Member;
@@ -12,9 +14,11 @@ interface ChaseItem {
 }
 
 export default function ChaseList() {
+  const { t, getWhatsAppText, whatsappLanguage } = useLanguage();
   const [items, setItems] = useState<ChaseItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmConfig, setConfirmConfig] = useState<{ isOpen: boolean, item: ChaseItem | null, method: 'cash' | 'upi' }>({ isOpen: false, item: null, method: 'cash' });
+  const [selectedLang, setSelectedLang] = useState<Language>(whatsappLanguage || 'as');
 
   useEffect(() => {
     fetchChaseList();
@@ -89,8 +93,8 @@ export default function ChaseList() {
 
   const handleWhatsApp = (item: ChaseItem) => {
     const phone = item.member.phone.replace('+', '');
-    const prefix = item.offset < 0 ? 'is due on' : (item.offset === 0 ? 'is due TODAY' : 'was due on');
-    const msg = encodeURIComponent(`Hi ${item.member.name}, a gentle reminder that your gym fee ${prefix} ${item.member.current_due_date}.`);
+    const reminderMsg = getWhatsAppText(item.member.name, item.member.current_due_date, item.offset, selectedLang);
+    const msg = encodeURIComponent(reminderMsg);
     window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
     
     if (!item.isSent) {
@@ -127,28 +131,77 @@ export default function ChaseList() {
     }
   };
 
-  if (loading) return <div className="text-center py-12 text-gray-500 ">Loading chase list...</div>;
+  if (loading) return <div className="text-center py-12 text-gray-500">{t('loading')}</div>;
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 ">Today's Chase List</h1>
-      <p className="text-gray-600 ">Members without email who require manual WhatsApp reminders today.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">{t('chase_title')}</h1>
+          <p className="text-gray-600 text-sm mt-1">{t('chase_subtitle')}</p>
+        </div>
+
+        {/* Quick Language Switcher for WhatsApp Reminder Message */}
+        <div className="bg-white p-2 rounded-xl border border-red-200 shadow-xs flex items-center gap-2 self-start sm:self-auto">
+          <span className="text-xs font-semibold text-gray-600 flex items-center gap-1">
+            <Sparkles size={12} className="text-red-600" />
+            {t('reminder_lang_selector')}:
+          </span>
+          <div className="flex gap-1">
+            <button
+              type="button"
+              onClick={() => setSelectedLang('as')}
+              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
+                selectedLang === 'as'
+                  ? 'bg-red-600 text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              অসমীয়া
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedLang('hi')}
+              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
+                selectedLang === 'hi'
+                  ? 'bg-red-600 text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              हिंदी
+            </button>
+            <button
+              type="button"
+              onClick={() => setSelectedLang('en')}
+              className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
+                selectedLang === 'en'
+                  ? 'bg-red-600 text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              EN
+            </button>
+          </div>
+        </div>
+      </div>
 
       {items.length === 0 ? (
-        <div className="bg-white  p-8 rounded-xl border border-red-200  text-center text-gray-500  shadow-sm">
-          No reminders needed today. Great job!
+        <div className="bg-white p-8 rounded-xl border border-red-200 text-center text-gray-500 shadow-sm">
+          {t('chase_no_reminders')}
         </div>
       ) : (
-        <div className="bg-white  rounded-xl border border-red-200  overflow-hidden shadow-sm">
+        <div className="bg-white rounded-xl border border-red-200 overflow-hidden shadow-sm">
           <ul className="divide-y divide-gray-100">
             {items.map((item, idx) => (
-              <li key={`${item.member.id}-${idx}`} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white  transition-colors">
+              <li key={`${item.member.id}-${idx}`} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50/50 transition-colors">
                 <div>
-                  <h3 className="font-semibold text-gray-900  text-lg">{item.member.name}</h3>
-                  <div className="text-sm text-gray-500  flex gap-3 mt-1">
-                    <span>Due: {item.member.current_due_date}</span>
+                  <h3 className="font-semibold text-gray-900 text-lg">{item.member.name}</h3>
+                  <div className="text-sm text-gray-500 flex gap-3 mt-1">
+                    <span>{t('due_date_label')}: {item.member.current_due_date}</span>
                     <span className="font-medium text-red-600">
-                      {item.offset < 0 ? `In ${Math.abs(item.offset)} days` : (item.offset === 0 ? 'Today' : `${item.offset} days late`)}
+                      {item.offset < 0 
+                        ? t('in_days', { n: Math.abs(item.offset) }) 
+                        : (item.offset === 0 ? t('today') : `${item.offset} ${t('days_late')}`)}
                     </span>
                   </div>
                 </div>
@@ -156,14 +209,15 @@ export default function ChaseList() {
                 <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
                   {item.isSent ? (
                     <div className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-red-50 text-red-700 font-medium rounded-lg min-h-[44px]">
-                      <CheckCircle size={18} /> Sent
+                      <CheckCircle size={18} /> {t('sent_badge')}
                     </div>
                   ) : (
                     <button 
                       onClick={() => handleWhatsApp(item)}
-                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 min-h-[44px]"
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-3 sm:py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 min-h-[44px] transition-colors shadow-xs"
+                      title={`Send WhatsApp reminder in ${selectedLang === 'as' ? 'Assamese' : (selectedLang === 'hi' ? 'Hindi' : 'English')}`}
                     >
-                      <MessageCircle size={18} /> WhatsApp
+                      <MessageCircle size={18} /> {t('send_whatsapp')}
                     </button>
                   )}
                   <div className="flex gap-2 w-full sm:w-auto">
@@ -171,13 +225,13 @@ export default function ChaseList() {
                       onClick={() => item.member.plan ? setConfirmConfig({ isOpen: true, item, method: 'upi' }) : alert("No plan")}
                       className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-3 py-3 sm:py-2 bg-green-50 text-green-700 font-medium rounded-lg hover:bg-green-100 min-h-[44px] text-sm border border-green-200"
                     >
-                      <QrCode size={16} /> UPI
+                      <QrCode size={16} /> {t('quick_pay_upi')}
                     </button>
                     <button 
                       onClick={() => item.member.plan ? setConfirmConfig({ isOpen: true, item, method: 'cash' }) : alert("No plan")}
                       className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-3 py-3 sm:py-2 bg-blue-50 text-blue-700 font-medium rounded-lg hover:bg-blue-100 min-h-[44px] text-sm border border-blue-200"
                     >
-                      <Banknote size={16} /> Cash
+                      <Banknote size={16} /> {t('quick_pay_cash')}
                     </button>
                   </div>
                 </div>
