@@ -150,7 +150,7 @@ export default function MemberDetails() {
           </div>
           <div>
             <div className="text-sm text-gray-500 ">Status</div>
-            <div className="font-medium capitalize">{member.status?.replace('_', ' ')}</div>
+            <div className="font-medium capitalize">{member.status === 'frozen' ? 'Inactive' : member.status?.replace('_', ' ')}</div>
           </div>
           <div>
             <div className="text-sm text-gray-500 ">Plan</div>
@@ -178,7 +178,7 @@ export default function MemberDetails() {
                     onClick={toggleFreeze}
                     className="flex-1 bg-gray-50  text-gray-700  px-4 py-3 sm:py-2 rounded-lg font-semibold hover:bg-gray-100  min-h-[44px]"
                   >
-                    {member.is_frozen ? 'Unfreeze' : 'Freeze'}
+                    {member.is_frozen ? 'Mark Active' : 'Mark Inactive'}
                   </button>
                   <button 
                     onClick={() => setIsConfirmArchiveOpen(true)}

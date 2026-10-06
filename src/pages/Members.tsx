@@ -18,7 +18,7 @@ import {
   type SortingState
 } from '@tanstack/react-table';
 
-type FilterType = 'All' | 'Paid' | 'Due soon' | 'Due' | 'Overdue' | 'Frozen' | 'Trainer clients';
+type FilterType = 'All' | 'Paid' | 'Due soon' | 'Due' | 'Overdue' | 'Inactive' | 'Trainer clients';
 const ITEMS_PER_PAGE = 200;
 
 export default function Members() {
@@ -84,7 +84,7 @@ export default function Members() {
       case 'due_soon': return t('status_due_soon');
       case 'due': return t('status_due');
       case 'overdue': return t('status_overdue');
-      case 'frozen': return t('status_frozen');
+      case 'frozen': return 'Inactive';
       default: return status?.replace('_', ' ') || '';
     }
   };
@@ -96,7 +96,7 @@ export default function Members() {
       case 'Due soon': return m.status === 'due_soon';
       case 'Due': return m.status === 'due';
       case 'Overdue': return m.status === 'overdue';
-      case 'Frozen': return m.status === 'frozen';
+      case 'Inactive': return m.status === 'frozen';
       case 'Trainer clients': return m.has_trainer;
       default: return true;
     }
@@ -203,7 +203,7 @@ export default function Members() {
             onChange={e => setFilter(e.target.value as FilterType)}
             className="w-full appearance-none pl-4 pr-10 py-3 bg-white rounded-xl border border-gray-200 shadow-sm focus:ring-4 focus:ring-red-500/10 focus:border-red-500 transition-all text-sm font-medium outline-none cursor-pointer"
           >
-            {['All', 'Paid', 'Due soon', 'Due', 'Overdue', 'Frozen', 'Trainer clients'].map(f => (
+            {['All', 'Paid', 'Due soon', 'Due', 'Overdue', 'Inactive', 'Trainer clients'].map(f => (
               <option key={f} value={f}>{f === 'All' ? t('filter_all') : f}</option>
             ))}
           </select>
