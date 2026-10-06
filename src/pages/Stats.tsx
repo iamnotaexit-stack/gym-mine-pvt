@@ -52,12 +52,11 @@ export default function Stats() {
     
     const overdueList: Member[] = [];
     const duesNext7Days: Member[] = [];
-    let renewalForecast30 = 0;
+    
 
     const trainerClients: Record<string, number> = {};
 
-    const todayMs = new Date(todayStr + 'T00:00:00Z').getTime();
-
+    
     members.forEach(m => {
       const status = computeMemberStatus(m.current_due_date, false, graceDays);
       
@@ -73,13 +72,7 @@ export default function Stats() {
         duesNext7Days.push(m);
       }
 
-      // Renewal forecast (due within next 30 days)
-      const dueMs = new Date(m.current_due_date + 'T00:00:00Z').getTime();
-      const daysDiff = (dueMs - todayMs) / (1000 * 60 * 60 * 24);
-      if (daysDiff >= 0 && daysDiff <= 30) {
-        renewalForecast30++;
-      }
-
+      
       if (m.join_date.startsWith(currentMonthPrefix)) {
         newJoins++;
       }
@@ -108,7 +101,7 @@ export default function Stats() {
 
     setStats({
       paid, unpaid, overdue, revenueThisMonth, revenueUPI, revenueCash, collectionRate,
-      overdueList, duesNext7Days, renewalForecast30, newJoins,
+      overdueList, duesNext7Days, newJoins,
       trainerClients
     });
 
@@ -249,7 +242,7 @@ export default function Stats() {
         <div className="bg-white  p-6 rounded-xl border border-red-200  shadow-sm">
           <div className="flex justify-between items-end mb-4">
             <h2 className="text-lg font-bold text-gray-900 ">Due in 7 Days</h2>
-            <div className="text-sm font-medium text-red-600">{stats.renewalForecast30} renewals in next 30d</div>
+            <div className="text-sm font-medium text-red-600">{stats.duesNext7Days.length} renewals in next 7d</div>
           </div>
           {stats.duesNext7Days.length === 0 ? (
             <p className="text-gray-500  text-sm">No dues in the next 7 days.</p>
