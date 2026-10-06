@@ -7,3 +7,16 @@
     @apply bg-gray-50 text-gray-900   transition-colors duration-200;
   }
 }
+
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 20px);
+  }
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom, 20px);
+  }
+}

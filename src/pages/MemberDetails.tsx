@@ -1,3 +1,4 @@
+import { Drawer } from 'vaul';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
@@ -15,6 +16,8 @@ export default function MemberDetails() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [isConfirmArchiveOpen, setIsConfirmArchiveOpen] = useState(false);
+  const [voidDrawer, setVoidDrawer] = useState({ isOpen: false, paymentId: '' });
+  const [voidReason, setVoidReason] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -78,18 +81,27 @@ export default function MemberDetails() {
     window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
   };
 
-  const handleVoidPayment = async (paymentId: string) => {
-    const reason = prompt("Enter reason for voiding this payment:");
-    if (!reason) return;
+  const handleVoidPayment = (paymentId: string) => {
+    setVoidReason('');
+    setVoidDrawer({ isOpen: true, paymentId });
+  };
+
+  const submitVoidPayment = async () => {
+    if (!voidReason.trim()) {
+      toast.error('Reason is required');
+      return;
+    }
     
     const { error } = await supabase.from('payments').update({ 
       voided_at: new Date().toISOString(), 
-      void_reason: reason 
-    }).eq('id', paymentId);
+      void_reason: voidReason 
+    }).eq('id', voidDrawer.paymentId);
     
     if (!error) {
-      setPayments(payments.map(p => p.id === paymentId ? { ...p, voided_at: new Date().toISOString(), void_reason: reason } : p));
+      setPayments(payments.map(p => p.id === voidDrawer.paymentId ? { ...p, voided_at: new Date().toISOString(), void_reason: voidReason } : p));
       fetchData();
+      setVoidDrawer({ isOpen: false, paymentId: '' });
+      toast.success('Payment voided');
     } else {
       toast.error(error.message);
     }
@@ -228,6 +240,40 @@ export default function MemberDetails() {
           </div>
         )}
       </div>
+
+      
+      <Drawer.Root open={voidDrawer.isOpen} onOpenChange={(open) => !open && setVoidDrawer({ isOpen: false, paymentId: '' })}>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]" />
+          <Drawer.Content className="bg-white flex flex-col rounded-t-[20px] fixed bottom-0 left-0 right-0 max-h-[85vh] z-[101] outline-none shadow-2xl">
+            <div className="p-4 bg-white rounded-t-[20px] flex-1 pb-safe">
+              <div className="mx-auto w-12 h-1.5 flex-shrink-0 rounded-full bg-gray-300 mb-6" />
+              <div className="max-w-md mx-auto">
+                <Drawer.Title className="font-bold text-xl text-gray-900 mb-2">Void Payment</Drawer.Title>
+                <Drawer.Description className="text-gray-600 mb-6 text-sm">Please provide a reason for voiding this payment.</Drawer.Description>
+                
+                <input 
+                  type="text" 
+                  autoFocus
+                  placeholder="Reason for voiding..." 
+                  value={voidReason}
+                  onChange={e => setVoidReason(e.target.value)}
+                  className="w-full px-4 py-3 min-h-[48px] rounded-xl border border-gray-300 mb-4 focus:ring-2 focus:ring-red-500 outline-none"
+                />
+
+                <div className="flex flex-col gap-3">
+                  <button onClick={submitVoidPayment} className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold min-h-[48px] rounded-xl transition-colors text-base">
+                    Confirm Void
+                  </button>
+                  <button onClick={() => setVoidDrawer({ isOpen: false, paymentId: '' })} className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold min-h-[48px] rounded-xl transition-colors text-base">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
 
       <ConfirmModal 
         isOpen={isConfirmArchiveOpen}

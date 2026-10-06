@@ -11,7 +11,10 @@
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.10.0",
+    "@hookform/resolvers": "^5.9.1",
     "@supabase/supabase-js": "^2.117.2",
+    "@tanstack/react-table": "^8.21.3",
+    "date-fns": "^4.4.0",
     "dotenv": "^18.0.4",
     "framer-motion": "^13.4.6",
     "lucide-react": "^1.48.0",
@@ -19,9 +22,13 @@
     "qrcode.react": "^4.2.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-hook-form": "^7.89.0",
     "react-loading-skeleton": "^3.5.0",
     "react-router-dom": "^7.18.4",
-    "sonner": "^2.0.8"
+    "recharts": "^3.10.1",
+    "sonner": "^2.0.8",
+    "vaul": "^1.1.2",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
