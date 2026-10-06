@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { supabase } from '../lib/supabase';
 import type { Member } from '../types';
@@ -91,7 +91,7 @@ export default function Members() {
     }
   };
 
-  const filtered = members.filter(m => {
+  const filtered = useMemo(() => members.filter(m => {
     if (search && !m.name.toLowerCase().includes(search.toLowerCase()) && !m.phone.includes(search)) return false;
     switch (filter) {
       case 'Paid': return m.status === 'active';
@@ -102,11 +102,11 @@ export default function Members() {
       case 'Trainer clients': return m.has_trainer;
       default: return true;
     }
-  });
+  }), [members, search, filter]);
 
   const columnHelper = createColumnHelper<Member>();
   
-  const columns = [
+  const columns = useMemo(() => [
     columnHelper.accessor('name', {
       header: t('name'),
       cell: info => (
@@ -155,7 +155,7 @@ export default function Members() {
         </div>
       )
     })
-  ];
+  ], [t, role, navigate]);
 
   const table = useReactTable({
     data: filtered,
