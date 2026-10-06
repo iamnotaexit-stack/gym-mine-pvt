@@ -52,6 +52,8 @@ export default function Stats() {
     let paid = 0;
     let unpaid = 0; // due or due_soon
     let overdue = 0;
+    let overdueAmount = 0;
+    let pendingAmount = 0;
     let newJoins = 0;
     
     const overdueList: Member[] = [];
@@ -66,12 +68,14 @@ export default function Stats() {
       else if (status === 'overdue') {
         overdue++;
         overdueList.push(m);
+        if (m.plan) overdueAmount += m.plan.price;
       } else {
         unpaid++; // due or due_soon
       }
 
       if (status === 'due_soon' || status === 'due') {
         duesNext7Days.push(m);
+        if (m.plan) pendingAmount += m.plan.price;
       }
       
       if (m.join_date.startsWith(currentMonthPrefix)) {
@@ -102,7 +106,7 @@ export default function Stats() {
 
     setStats({
       paid, unpaid, overdue, revenueThisMonth, revenueUPI, revenueCash,
-      overdueList, duesNext7Days, newJoins,
+      overdueList, duesNext7Days, newJoins, overdueAmount, pendingAmount,
       trainerClients
     });
 
@@ -149,7 +153,10 @@ export default function Stats() {
             <div className="flex items-center gap-1.5 text-gray-500 mb-2">
               <AlertCircle size={16} className="text-red-500" /> <span className="text-xs font-semibold uppercase tracking-wider">Overdue</span>
             </div>
-            <div className="text-2xl sm:text-3xl font-black text-red-600 tracking-tight">{stats.overdue}</div>
+            <div className="text-2xl sm:text-3xl font-black text-red-600 tracking-tight">{stats.overdue} <span className="text-sm font-medium text-red-400">members</span></div>
+            <div className="mt-2 text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded-lg inline-block">
+              ₹{stats.overdueAmount.toLocaleString()} Pending
+            </div>
           </div>
         </div>
 
@@ -196,7 +203,7 @@ export default function Stats() {
         <div className={`${cardClasses}`}>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-base sm:text-lg font-bold text-gray-900">Due in 7 Days</h2>
-            <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold">{stats.duesNext7Days.length}</span>
+            <div className="flex gap-2 items-center"><span className="text-[10px] sm:text-xs font-bold text-gray-500">₹{stats.pendingAmount.toLocaleString()}</span><span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold">{stats.duesNext7Days.length}</span></div>
           </div>
           {stats.duesNext7Days.length === 0 ? (
             <div className="h-32 flex items-center justify-center text-gray-400 text-sm font-medium">No upcoming dues.</div>
