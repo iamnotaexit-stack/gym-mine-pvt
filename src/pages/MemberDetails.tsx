@@ -7,9 +7,11 @@ import type { Member, Payment } from '../types';
 import { computeMemberStatus } from '../lib/dates';
 import { ArrowLeft, Edit, MessageCircle, FileText, CreditCard } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import ConfirmModal from '../components/ConfirmModal';
 
 export default function MemberDetails() {
+  const { getWhatsAppText } = useLanguage();
   const { id } = useParams();
   const { role } = useAuth();
   const [member, setMember] = useState<Member | null>(null);
@@ -77,7 +79,9 @@ export default function MemberDetails() {
   const handleWhatsApp = () => {
     if (!member) return;
     const phone = member.phone.replace('+', '');
-    const msg = encodeURIComponent(`Hi ${member.name}, your gym fee was due on ${member.current_due_date}.`);
+    const daysOffset = Math.floor((new Date().getTime() - new Date(member.current_due_date + 'T00:00:00Z').getTime()) / (1000 * 3600 * 24));
+    const baseMsg = getWhatsAppText(member.name, member.current_due_date, daysOffset);
+    const msg = encodeURIComponent(baseMsg);
     window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
   };
 

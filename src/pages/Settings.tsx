@@ -7,7 +7,7 @@ import {
   Plus, 
   Save, 
   Trash as TrashIcon,
-  Globe,
+  Globe, MessageCircle,
   } from 'lucide-react';
 import type { Plan } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -120,12 +120,25 @@ export default function Settings() {
 
       
       {/* 0. APP SETTINGS */}
-      <div className="bg-white sm:rounded-xl sm:border sm:border-red-200 sm:shadow-sm sm:p-6 p-4 border-b sm:border-none border-gray-100 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-gray-900 font-semibold">
-          <Globe size={18} className="text-gray-400" />
-          <span>App UI Language</span>
+      <div className="bg-white sm:rounded-xl sm:border sm:border-red-200 sm:shadow-sm sm:p-6 p-4 border-b sm:border-none border-gray-100 flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-gray-900 font-semibold">
+            <Globe size={18} className="text-gray-400" />
+            <span>App UI Language</span>
+          </div>
+          <LanguageSelector variant="compact" mode="app" />
         </div>
-        <LanguageSelector variant="compact" />
+        <div className="border-t border-gray-100 w-full" />
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 text-gray-900 font-semibold">
+              <MessageCircle size={18} className="text-green-500" />
+              <span>WhatsApp Language</span>
+            </div>
+            <span className="text-xs text-gray-500 ml-6 mt-0.5">Language sent to members</span>
+          </div>
+          <LanguageSelector variant="compact" mode="whatsapp" />
+        </div>
       </div>
 
       {/* 1. GENERAL SETTINGS */}

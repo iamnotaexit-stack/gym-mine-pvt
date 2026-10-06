@@ -6,6 +6,7 @@ interface LanguageSelectorProps {
   variant?: 'compact' | 'cards' | 'header' | 'inline';
   className?: string;
   showRegionBadge?: boolean;
+  mode?: 'app' | 'whatsapp';
 }
 
 const LANGUAGES: { code: Language; label: string; nativeName: string; regionNote: string }[] = [
@@ -32,21 +33,24 @@ const LANGUAGES: { code: Language; label: string; nativeName: string; regionNote
 export default function LanguageSelector({
   variant = 'compact',
   className = '',
-  showRegionBadge = false
+  showRegionBadge = false,
+  mode = 'app'
 }: LanguageSelectorProps) {
-  const { language, setLanguage, regionInfo } = useLanguage();
+  const { language, setLanguage, whatsappLanguage, setWhatsappLanguage, regionInfo } = useLanguage();
+  const currentLang = mode === 'app' ? language : whatsappLanguage;
+  const setCurrentLang = mode === 'app' ? setLanguage : setWhatsappLanguage;
 
   if (variant === 'cards') {
     return (
       <div className={`space-y-4 ${className}`}>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {LANGUAGES.map((lang) => {
-            const isSelected = language === lang.code;
+            const isSelected = currentLang === lang.code;
             return (
               <button
                 key={lang.code}
                 type="button"
-                onClick={() => setLanguage(lang.code)}
+                onClick={() => setCurrentLang(lang.code)}
                 className={`p-4 rounded-xl border text-left transition-all relative overflow-hidden flex flex-col justify-between ${
                   isSelected
                     ? 'border-red-600 bg-red-50/70 shadow-sm ring-2 ring-red-500/20'
@@ -107,7 +111,7 @@ export default function LanguageSelector({
           <Globe size={14} />
         </div>
         <select 
-          value={language}
+          value={currentLang}
           onChange={(e) => setLanguage(e.target.value as Language)}
           className="appearance-none bg-transparent text-white font-bold text-xs py-1.5 pl-7 pr-3 outline-none cursor-pointer hover:bg-red-700/50 transition-colors"
         >
@@ -126,12 +130,12 @@ export default function LanguageSelector({
     <div className={`inline-flex items-center gap-1 bg-gray-100 p-1 rounded-lg border border-gray-200 ${className}`}>
       <Globe size={14} className="text-gray-500 ml-1 mr-0.5" />
       {LANGUAGES.map((lang) => {
-        const isSelected = language === lang.code;
+        const isSelected = currentLang === lang.code;
         return (
           <button
             key={lang.code}
             type="button"
-            onClick={() => setLanguage(lang.code)}
+            onClick={() => setCurrentLang(lang.code)}
             className={`px-2.5 py-1 rounded text-xs font-semibold transition-all ${
               isSelected
                 ? 'bg-red-600 text-white shadow-xs'
