@@ -1,5 +1,6 @@
 import { formatMoney } from '../lib/money';
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Plan } from '../types';
@@ -109,45 +110,44 @@ export default function MemberForm() {
       setLoading(false);
       if (!error) navigate(`/members/${id}`);
     } else {
-      const { data: insertedMember, error } = await supabase.from('members').insert(payload).select().single();
-      
-      if (!error && insertedMember) {
-        if (role === 'owner' && (payAdmissionFee || payPlanFee) && selectedPlan) {
-          let totalAmount = 0;
-          let notes = [];
-          if (payAdmissionFee) {
-            totalAmount += globalAdmissionFee;
-            notes.push(`Admission: ₹${globalAdmissionFee}`);
-          }
-          if (payPlanFee) {
-            totalAmount += selectedPlan.price;
-            notes.push(`Plan: ₹${selectedPlan.price}`);
-          }
-          
-          await supabase.from('payments').insert({
-            member_id: insertedMember.id,
-            amount: totalAmount,
-            trainer_fee: 0,
-            method: 'cash',
-            paid_on: form.join_date,
-            covers_from: form.join_date,
-            covers_to: current_due_date,
-            note: `Initial Payment (${notes.join(', ')})`
-          });
-        }
+      const { data: user } = await supabase.auth.getUser();
+      const actorId = user.user?.id;
 
-        // Log activity
-        const { data: user } = await supabase.auth.getUser();
-        if (user.user) {
-          await supabase.from('audit_log').insert({
-            actor: user.user.id,
-            action: 'create_member',
-            entity: 'members',
-            entity_id: insertedMember.id, 
-            meta: { name: payload.name }
-          });
+      let totalAmount = 0;
+      let notes = [];
+      const willPay = role === 'owner' && (payAdmissionFee || payPlanFee) && selectedPlan;
+      if (willPay) {
+        if (payAdmissionFee) {
+          totalAmount += globalAdmissionFee;
+          notes.push(`Admission: ₹${globalAdmissionFee}`);
         }
+        if (payPlanFee) {
+          totalAmount += selectedPlan.price;
+          notes.push(`Plan: ₹${selectedPlan.price}`);
+        }
+      }
 
+      const { data: newMemberId, error } = await supabase.rpc('create_member_with_payment', {
+        p_id: null,
+        p_name: payload.name,
+        p_phone: payload.phone,
+        p_email: payload.email,
+        p_join_date: payload.join_date,
+        p_anchor_day: payload.anchor_day,
+        p_plan_id: payload.plan_id,
+        p_has_trainer: payload.has_trainer,
+        p_trainer_name: payload.trainer_name,
+        
+        p_pay_amount: willPay ? totalAmount : 0,
+        p_pay_method: 'cash',
+        p_pay_covers_from: form.join_date,
+        p_pay_covers_to: current_due_date,
+        p_idempotency: crypto.randomUUID(),
+        
+        p_actor_id: actorId
+      });
+
+      if (!error && newMemberId) {
         // If email exists, invite them via Edge Function
         if (payload.email) {
           try {
@@ -166,6 +166,8 @@ export default function MemberForm() {
 
         setCreatedName(form.name);
         setShowQR(true);
+      } else {
+        toast.error(error?.message || 'Error creating member');
       }
       setLoading(false);
     }

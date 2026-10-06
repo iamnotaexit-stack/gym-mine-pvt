@@ -45,7 +45,8 @@ export default function Stats() {
       const { data: paymentsData } = await supabase
         .from('payments')
         .select('*')
-        .like('paid_on', `${currentMonthPrefix}-%`);
+        .gte('paid_on', `${currentMonthPrefix}-01`)
+        .lte('paid_on', `${currentMonthPrefix}-31`);
         
       members = membersData || [];
       payments = paymentsData || [];

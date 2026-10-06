@@ -251,10 +251,10 @@ export default function Members() {
                 </div>
                 
                 <div className="flex gap-2 pt-1" onClick={e => e.stopPropagation()}>
-                  {role === 'owner' && <button onClick={(e) => { e.preventDefault(); navigate(`/members/${m.id}/edit`); }} className="flex-1 py-2.5 flex items-center justify-center gap-1.5 text-sm font-semibold text-gray-600 bg-white hover:bg-gray-50 rounded-xl border border-gray-200 shadow-sm transition-colors">
+                  {role === 'owner' && <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/members/${m.id}/edit`); }} className="flex-1 py-2.5 flex items-center justify-center gap-1.5 text-sm font-semibold text-gray-600 bg-white hover:bg-gray-50 rounded-xl border border-gray-200 shadow-sm transition-colors">
                     <Edit size={16} /> Edit
                   </button>}
-                  <button onClick={(e) => { e.preventDefault(); setConfirmConfig({ isOpen: true, type: 'archive', id: m.id }); }} className="w-12 flex items-center justify-center text-rose-600 bg-white hover:bg-rose-50 rounded-xl border border-gray-200 hover:border-rose-200 shadow-sm transition-colors">
+                  <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setConfirmConfig({ isOpen: true, type: 'archive', id: m.id }); }} className="w-12 flex items-center justify-center text-rose-600 bg-white hover:bg-rose-50 rounded-xl border border-gray-200 hover:border-rose-200 shadow-sm transition-colors">
                     <Trash2 size={18} />
                   </button>
                 </div>
