@@ -1,3 +1,4 @@
+import { formatMoney } from '../lib/money';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -36,6 +37,7 @@ export default function MemberForm() {
   const [globalAdmissionFee, setGlobalAdmissionFee] = useState(500);
   const [admissionFeeEditable, setAdmissionFeeEditable] = useState(true);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchPlans();
     if (isEditing) {
@@ -83,7 +85,7 @@ export default function MemberForm() {
     
     // If logging plan fee, calculate the real next due date, else they are due immediately
     let current_due_date = form.join_date;
-    if (!isEditing && payPlanFee && selectedPlan) {
+    if (!isEditing && role === 'owner' && payPlanFee && selectedPlan) {
        current_due_date = calculateNextDueDate(anchor_day, form.join_date, selectedPlan.months);
     }
 
@@ -110,7 +112,7 @@ export default function MemberForm() {
       const { data: insertedMember, error } = await supabase.from('members').insert(payload).select().single();
       
       if (!error && insertedMember) {
-        if ((payAdmissionFee || payPlanFee) && selectedPlan) {
+        if (role === 'owner' && (payAdmissionFee || payPlanFee) && selectedPlan) {
           let totalAmount = 0;
           let notes = [];
           if (payAdmissionFee) {
@@ -317,13 +319,13 @@ export default function MemberForm() {
               >
                 <option value="" disabled>Select a plan...</option>
                 {plans.map(p => (
-                  <option key={p.id} value={p.id}>{p.name} (₹{p.price} for {p.months}m)</option>
+                  <option key={p.id} value={p.id}>{p.name} ({formatMoney(p.price)} for {p.months}m)</option>
                 ))}
               </select>
             )}
           </div>
 
-          {!isEditing && plans.length > 0 && (
+          {!isEditing && role === 'owner' && plans.length > 0 && (
             <div className="sm:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4">
               <h3 className="font-bold text-gray-900 text-sm mb-2">Initial Payments (Optional)</h3>
               
@@ -358,13 +360,13 @@ export default function MemberForm() {
                   onChange={e => setPayPlanFee(e.target.checked)}
                   className="w-5 h-5 sm:w-4 sm:h-4 text-red-600 rounded border-gray-300 focus:ring-red-500"
                 />
-                <span className="text-gray-900 font-medium select-none">Plan Fee Paid (₹{selectedPlanPrice})</span>
+                <span className="text-gray-900 font-medium select-none">Plan Fee Paid ({formatMoney(selectedPlanPrice)})</span>
               </label>
 
               {(payAdmissionFee || payPlanFee) && (
                 <div className="pt-3 border-t border-gray-200 mt-2">
                   <div className="text-sm text-gray-700">
-                    Total Collecting Today: <span className="font-bold text-green-700 bg-green-50 px-2 py-1 rounded">₹{(payAdmissionFee ? globalAdmissionFee : 0) + (payPlanFee ? selectedPlanPrice : 0)}</span>
+                    Total Collecting Today: <span className="font-bold text-green-700 bg-green-50 px-2 py-1 rounded">{formatMoney((payAdmissionFee ? globalAdmissionFee : 0) + (payPlanFee ? selectedPlanPrice : 0))}</span>
                   </div>
                 </div>
               )}

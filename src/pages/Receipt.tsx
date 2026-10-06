@@ -1,3 +1,4 @@
+import { formatMoney } from '../lib/money';
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -137,14 +138,14 @@ export default function Receipt() {
                 <div className="font-medium text-gray-900">{t('gym_membership')} ({data.member.plan?.name || '-'})</div>
                 <div className="text-sm text-gray-500 mt-1">Covers: {data.covers_from} to {data.covers_to}</div>
               </td>
-              <td className="py-4 text-right font-medium">₹{data.amount}</td>
+              <td className="py-4 text-right font-medium">{formatMoney(data.amount)}</td>
             </tr>
             {data.trainer_fee > 0 && (
               <tr className="border-b border-red-100">
                 <td className="py-4">
                   <div className="font-medium text-gray-900">{t('trainer_fee_label')}</div>
                 </td>
-                <td className="py-4 text-right font-medium">₹{data.trainer_fee}</td>
+                <td className="py-4 text-right font-medium">{formatMoney(data.trainer_fee)}</td>
               </tr>
             )}
           </tbody>
@@ -154,7 +155,7 @@ export default function Receipt() {
           <div className="w-1/2 sm:w-1/3">
             <div className="flex justify-between items-center text-lg font-bold text-gray-900 border-t-2 border-gray-800 pt-3">
               <span>{t('total_label')}</span>
-              <span>₹{total}</span>
+              <span>{formatMoney(total)}</span>
             </div>
             <div className="text-right text-sm text-gray-500 mt-2 uppercase">
               {t('paid_via')} {data.method}

@@ -7,6 +7,7 @@ import { Search, Plus, Filter, Edit, Trash2, UserCheck, ChevronDown, ChevronUp }
 import { Link, useNavigate } from 'react-router-dom';
 import ConfirmModal from '../components/ConfirmModal';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import {
@@ -23,6 +24,7 @@ const ITEMS_PER_PAGE = 200;
 
 export default function Members() {
   const { t } = useLanguage();
+  const { role } = useAuth();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -141,12 +143,12 @@ export default function Members() {
       header: () => <div className="text-right">{t('actions')}</div>,
       cell: info => (
         <div className="flex items-center justify-end gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
-          <button onClick={(e) => { e.preventDefault(); navigate(`/members/${info.row.original.id}/edit`); }} className="p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 rounded-md transition-all border border-transparent hover:border-gray-200 shadow-sm" title={t('edit')}>
+          {role === 'owner' && <button onClick={(e) => { e.preventDefault(); navigate(`/members/${info.row.original.id}/edit`); }} className="p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 rounded-md transition-all border border-transparent hover:border-gray-200 shadow-sm" title={t('edit')}>
             <Edit size={16} />
-          </button>
-          <button onClick={(e) => { e.preventDefault(); setConfirmConfig({ isOpen: true, type: 'trainer', id: info.row.original.id }); }} className="p-1.5 text-purple-600 hover:bg-purple-50 hover:text-purple-700 rounded-md transition-all border border-transparent hover:border-purple-200 shadow-sm" title={t('upgrade')}>
+          </button>}
+          {role === 'owner' && <button onClick={(e) => { e.preventDefault(); setConfirmConfig({ isOpen: true, type: 'trainer', id: info.row.original.id }); }} className="p-1.5 text-purple-600 hover:bg-purple-50 hover:text-purple-700 rounded-md transition-all border border-transparent hover:border-purple-200 shadow-sm" title={t('upgrade')}>
             <UserCheck size={16} />
-          </button>
+          </button>}
           <button onClick={(e) => { e.preventDefault(); setConfirmConfig({ isOpen: true, type: 'archive', id: info.row.original.id }); }} className="p-1.5 text-rose-600 hover:bg-rose-50 hover:text-rose-700 rounded-md transition-all border border-transparent hover:border-rose-200 shadow-sm" title={t('delete_archive')}>
             <Trash2 size={16} />
           </button>
@@ -249,9 +251,9 @@ export default function Members() {
                 </div>
                 
                 <div className="flex gap-2 pt-1" onClick={e => e.stopPropagation()}>
-                  <button onClick={(e) => { e.preventDefault(); navigate(`/members/${m.id}/edit`); }} className="flex-1 py-2.5 flex items-center justify-center gap-1.5 text-sm font-semibold text-gray-600 bg-white hover:bg-gray-50 rounded-xl border border-gray-200 shadow-sm transition-colors">
+                  {role === 'owner' && <button onClick={(e) => { e.preventDefault(); navigate(`/members/${m.id}/edit`); }} className="flex-1 py-2.5 flex items-center justify-center gap-1.5 text-sm font-semibold text-gray-600 bg-white hover:bg-gray-50 rounded-xl border border-gray-200 shadow-sm transition-colors">
                     <Edit size={16} /> Edit
-                  </button>
+                  </button>}
                   <button onClick={(e) => { e.preventDefault(); setConfirmConfig({ isOpen: true, type: 'archive', id: m.id }); }} className="w-12 flex items-center justify-center text-rose-600 bg-white hover:bg-rose-50 rounded-xl border border-gray-200 hover:border-rose-200 shadow-sm transition-colors">
                     <Trash2 size={18} />
                   </button>

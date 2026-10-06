@@ -1,3 +1,4 @@
+import { formatMoney } from '../lib/money';
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Member, Payment } from '../types';
@@ -152,7 +153,7 @@ export default function Stats() {
               <TrendingUp size={16} className="text-red-500" /> <span className="text-xs sm:text-sm font-semibold uppercase tracking-wider">Revenue</span>
             </div>
             <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">This Month</div>
-            <div className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">₹{stats.revenueThisMonth.toLocaleString()}</div>
+            <div className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">{formatMoney(stats.revenueThisMonth)}</div>
             <div className="mt-2 sm:mt-4 flex gap-3 text-xs sm:text-sm font-medium">
               <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500"></span>UPI: ₹{stats.revenueUPI.toLocaleString()}</div>
               <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500"></span>Cash: ₹{stats.revenueCash.toLocaleString()}</div>

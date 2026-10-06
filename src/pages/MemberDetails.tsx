@@ -1,3 +1,4 @@
+import { formatMoney } from '../lib/money';
 import { Drawer } from 'vaul';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
@@ -224,7 +225,7 @@ export default function MemberDetails() {
                     {payments.map(p => (
                       <tr key={p.id} className={`border-b border-red-100 ${p.voided_at ? "opacity-50 line-through" : ""}`}>
                         <td className="p-3 text-sm">{p.paid_on}</td>
-                        <td className="p-3 text-sm font-medium">₹{p.amount}</td>
+                        <td className="p-3 text-sm font-medium">{formatMoney(p.amount)}</td>
                         <td className="p-3 text-sm text-gray-600 ">{p.covers_to}</td>
                         <td className="p-3 text-sm">
                           <Link to={`/receipt/${p.id}`} className="text-red-600 hover:underline flex items-center gap-1">

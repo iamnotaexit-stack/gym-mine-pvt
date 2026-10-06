@@ -1,5 +1,6 @@
 import { HashRouter as Router, Routes, Route, Navigate, Link, NavLink } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { supabase } from './lib/supabase';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import LanguageSelector from './components/LanguageSelector';
 import { LogOut, Users, Settings as SettingsIcon, Trash2, ListChecks, BarChart2, History, MapPin } from 'lucide-react';
@@ -153,7 +154,7 @@ function Login() {
     setLoading(true);
     setError(null);
     setSuccess(false);
-    const { supabase } = await import('./lib/supabase');
+    
     
     if (isMagicLink) {
       const { error } = await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: false, emailRedirectTo: window.location.origin } });
