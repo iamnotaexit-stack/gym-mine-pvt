@@ -94,14 +94,14 @@ function Layout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Mobile Bottom Tab Bar */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-16 z-40 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] pb-safe">
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-stretch pt-2 pb-safe z-40 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] min-h-[4rem]">
         {role !== 'member' && (
           <>
-            <NavLink to="/" end className={({ isActive }) => `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
+            <NavLink to="/" end className={({ isActive }) => `flex flex-col items-center justify-center w-full py-2 ${isActive ? 'text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
               <Users size={24} />
               <span className="text-[10px] font-medium mt-1">{t('nav_members')}</span>
             </NavLink>
-            <NavLink to="/chase" className={({ isActive }) => `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
+            <NavLink to="/chase" className={({ isActive }) => `flex flex-col items-center justify-center w-full py-2 ${isActive ? 'text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
               <ListChecks size={24} />
               <span className="text-[10px] font-medium mt-1">{t('nav_chase')}</span>
             </NavLink>
@@ -109,11 +109,11 @@ function Layout({ children }: { children: React.ReactNode }) {
         )}
         {role === 'owner' && (
           <>
-            <NavLink to="/stats" className={({ isActive }) => `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
+            <NavLink to="/stats" className={({ isActive }) => `flex flex-col items-center justify-center w-full py-2 ${isActive ? 'text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
               <BarChart2 size={24} />
               <span className="text-[10px] font-medium mt-1">{t('nav_stats')}</span>
             </NavLink>
-            <NavLink to="/settings" className={({ isActive }) => `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
+            <NavLink to="/settings" className={({ isActive }) => `flex flex-col items-center justify-center w-full py-2 ${isActive ? 'text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
               <SettingsIcon size={24} />
               <span className="text-[10px] font-medium mt-1">{t('nav_settings')}</span>
             </NavLink>
