@@ -62,7 +62,7 @@ export default function ChaseList() {
     for (const m of members) {
       const dueMs = new Date(m.current_due_date + 'T00:00:00Z').getTime();
       const daysDiff = (dueMs - todayMs) / (1000 * 60 * 60 * 24);
-      const currentOffset = -daysDiff;
+      const currentOffset = -Math.round(daysDiff);
       
       if (offsets.includes(currentOffset)) {
         needsReminder.push({ member: m, offset: currentOffset });
