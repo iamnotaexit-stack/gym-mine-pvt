@@ -3,13 +3,15 @@ import { supabase } from '../lib/supabase';
 import type { Member, Payment } from '../types';
 import { computeMemberStatus, getCurrentISTDateString } from '../lib/dates';
 import { Link } from 'react-router-dom';
-import { TrendingUp, AlertCircle, Calendar, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, AlertCircle, Calendar, ArrowUpRight, MessageCircle } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
 } from 'recharts';
 
 export default function Stats() {
+  const { getWhatsAppText, whatsappLanguage } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<any>(null);
 
@@ -113,6 +115,16 @@ export default function Stats() {
     setLoading(false);
   };
 
+  
+  const handleWhatsApp = (e: React.MouseEvent, m: Member) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const phone = m.phone.replace('+', '');
+    const daysOffset = Math.floor((new Date().getTime() - new Date(m.current_due_date + 'T00:00:00Z').getTime()) / (1000 * 3600 * 24));
+    const msg = encodeURIComponent(getWhatsAppText(m.name, m.current_due_date, daysOffset, whatsappLanguage));
+    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+  };
+
   if (loading || !stats) return <div className="text-center py-12 text-gray-500">Calculating stats...</div>;
 
   const trainerChartData = Object.entries(stats.trainerClients).map(([name, count]) => ({
@@ -139,6 +151,7 @@ export default function Stats() {
             <div className="flex items-center gap-1.5 text-gray-500 mb-2 sm:mb-4">
               <TrendingUp size={16} className="text-red-500" /> <span className="text-xs sm:text-sm font-semibold uppercase tracking-wider">Revenue</span>
             </div>
+            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">This Month</div>
             <div className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">₹{stats.revenueThisMonth.toLocaleString()}</div>
             <div className="mt-2 sm:mt-4 flex gap-3 text-xs sm:text-sm font-medium">
               <div className="flex items-center gap-1"><span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500"></span>UPI: ₹{stats.revenueUPI.toLocaleString()}</div>
@@ -189,8 +202,16 @@ export default function Stats() {
                       <div className="font-bold text-sm sm:text-base text-gray-900 group-hover:text-red-700 transition-colors">{m.name}</div>
                       <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Due: {m.current_due_date}</div>
                     </div>
-                    <div className="text-[10px] sm:text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-lg">
-                      {Math.floor((new Date().getTime() - new Date(m.current_due_date + 'T00:00:00Z').getTime()) / (1000 * 3600 * 24))} days late
+                    <div className="flex items-center gap-2">
+                      <div className="text-[10px] sm:text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-lg">
+                        {Math.floor((new Date().getTime() - new Date(m.current_due_date + 'T00:00:00Z').getTime()) / (1000 * 3600 * 24))} days late
+                      </div>
+                      <button 
+                        onClick={(e) => handleWhatsApp(e, m)}
+                        className="p-1.5 bg-green-50 text-green-600 hover:bg-green-500 hover:text-white rounded-lg transition-colors min-w-[32px] min-h-[32px] flex items-center justify-center"
+                      >
+                        <MessageCircle size={16} />
+                      </button>
                     </div>
                   </div>
                 </Link>
