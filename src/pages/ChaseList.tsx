@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { supabase } from '../lib/supabase';
@@ -181,13 +182,13 @@ export default function ChaseList() {
                   )}
                   <div className="flex gap-2 w-full sm:w-auto">
                     <button 
-                      onClick={() => item.member.plan ? setConfirmConfig({ isOpen: true, item, method: 'upi' }) : alert("No plan")}
+                      onClick={() => item.member.plan ? setConfirmConfig({ isOpen: true, item, method: 'upi' }) : toast.error("No plan")}
                       className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-3 py-3 sm:py-2 bg-green-50 text-green-700 font-medium rounded-lg hover:bg-green-100 min-h-[44px] text-sm border border-green-200"
                     >
                       <QrCode size={16} /> {t('quick_pay_upi')}
                     </button>
                     <button 
-                      onClick={() => item.member.plan ? setConfirmConfig({ isOpen: true, item, method: 'cash' }) : alert("No plan")}
+                      onClick={() => item.member.plan ? setConfirmConfig({ isOpen: true, item, method: 'cash' }) : toast.error("No plan")}
                       className="flex-1 sm:flex-none flex items-center justify-center gap-1 px-3 py-3 sm:py-2 bg-blue-50 text-blue-700 font-medium rounded-lg hover:bg-blue-100 min-h-[44px] text-sm border border-blue-200"
                     >
                       <Banknote size={16} /> {t('quick_pay_cash')}

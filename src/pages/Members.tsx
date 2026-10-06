@@ -8,6 +8,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { mockMembers } from '../lib/mockData';
 import ConfirmModal from '../components/ConfirmModal';
 import { useLanguage } from '../contexts/LanguageContext';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 type FilterType = 'All' | 'Paid' | 'Due soon' | 'Due' | 'Overdue' | 'Frozen' | 'Trainer clients';
 
@@ -207,7 +209,19 @@ export default function Members() {
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-gray-500">{t('loading')}</div>
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="bg-white p-4 rounded-xl border border-red-200 shadow-sm flex flex-col gap-2">
+              <Skeleton height={20} width="40%" />
+              <Skeleton height={14} width="25%" />
+              <div className="flex justify-between pt-2 border-t border-red-50">
+                <Skeleton height={30} width={80} />
+                <Skeleton height={30} width={80} />
+                <Skeleton height={30} width={40} />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:hidden gap-3" ref={parentRef}>
           {filtered.map(m => (

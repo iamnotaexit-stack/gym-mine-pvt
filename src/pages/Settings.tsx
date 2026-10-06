@@ -11,6 +11,7 @@ import {
   } from 'lucide-react';
 import type { Plan } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
+import { toast } from 'sonner';
 
 import LanguageSelector from '../components/LanguageSelector';
 
@@ -72,7 +73,7 @@ export default function Settings() {
       group_url_general: generalGroup,
       group_url_trainer: trainerGroup
     }).eq('id', (await supabase.from('settings').select('id').single()).data?.id);
-    alert(t('saved_alert'));
+    toast.success(t('saved_alert'));
   };
 
   const handleAddPlan = async (e: React.FormEvent) => {
@@ -82,7 +83,7 @@ export default function Settings() {
       setPlans([...plans, data]);
       setNewPlan({ name: '', months: 1, price: 1000 });
     } else {
-      alert('Error creating plan');
+      toast.success('Error creating plan');
     }
   };
 

@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -90,7 +91,7 @@ export default function MemberDetails() {
       setPayments(payments.map(p => p.id === paymentId ? { ...p, voided_at: new Date().toISOString(), void_reason: reason } : p));
       fetchData();
     } else {
-      alert(error.message);
+      toast.error(error.message);
     }
   };
 

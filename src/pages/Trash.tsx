@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Member } from '../types';
@@ -49,7 +50,7 @@ export default function Trash() {
     if (!error) {
       setMembers(members.filter(m => m.id !== id));
     } else {
-      alert('Failed to restore member');
+      toast.error('Failed to restore member');
     }
   };
 

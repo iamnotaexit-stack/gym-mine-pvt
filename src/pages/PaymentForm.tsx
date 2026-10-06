@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -92,7 +93,7 @@ export default function PaymentForm() {
     
     if (error) {
       console.error(error);
-      alert(error.message || 'Failed to record payment');
+      toast.error(error.message || 'Failed to record payment');
       setLoading(false);
       return;
     }

@@ -1,10 +1,11 @@
-import { HashRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, Link, NavLink } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import LanguageSelector from './components/LanguageSelector';
 import { LogOut, Users, Settings as SettingsIcon, Trash2, ListChecks, BarChart2, History, MapPin } from 'lucide-react';
 import React, { Suspense, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Toaster } from 'sonner';
 import Members from './pages/Members';
 
 // Code split other routes to keep main bundle tiny
@@ -93,29 +94,29 @@ function Layout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Mobile Bottom Tab Bar */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-red-200 flex justify-around items-center h-16 z-10 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-16 z-40 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] pb-safe">
         {role !== 'member' && (
           <>
-            <Link to="/" className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-600">
+            <NavLink to="/" end className={({ isActive }) => `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
               <Users size={24} />
               <span className="text-[10px] font-medium mt-1">{t('nav_members')}</span>
-            </Link>
-            <Link to="/chase" className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-600">
+            </NavLink>
+            <NavLink to="/chase" className={({ isActive }) => `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
               <ListChecks size={24} />
               <span className="text-[10px] font-medium mt-1">{t('nav_chase')}</span>
-            </Link>
+            </NavLink>
           </>
         )}
         {role === 'owner' && (
           <>
-            <Link to="/stats" className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-600">
+            <NavLink to="/stats" className={({ isActive }) => `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
               <BarChart2 size={24} />
               <span className="text-[10px] font-medium mt-1">{t('nav_stats')}</span>
-            </Link>
-            <Link to="/settings" className="flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-red-600">
+            </NavLink>
+            <NavLink to="/settings" className={({ isActive }) => `flex flex-col items-center justify-center w-full h-full ${isActive ? 'text-red-600' : 'text-gray-400 hover:text-red-500'}`}>
               <SettingsIcon size={24} />
               <span className="text-[10px] font-medium mt-1">{t('nav_settings')}</span>
-            </Link>
+            </NavLink>
           </>
         )}
       </nav>
@@ -245,6 +246,7 @@ function App() {
     <ErrorBoundary>
       <LanguageProvider>
         <AuthProvider>
+          <Toaster position="top-center" richColors />
           <Router>
             <Routes>
               <Route path="/login" element={<Login />} />
