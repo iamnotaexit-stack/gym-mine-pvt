@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import type { Member, Payment } from '../types';
 import { computeMemberStatus, getCurrentISTDateString } from '../lib/dates';
 import { Link } from 'react-router-dom';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { TrendingUp, Users, AlertCircle, Calendar, ArrowUpRight } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
@@ -211,6 +212,7 @@ export default function Stats() {
         <div className={`${cardClasses}`}>
           <h2 className="text-lg font-bold mb-6 text-gray-900">Revenue Trend</h2>
           <div className="h-64 w-full">
+            <ErrorBoundary>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenueTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
@@ -229,6 +231,7 @@ export default function Stats() {
                 <Area type="monotone" dataKey="revenue" stroke="#ef4444" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
               </AreaChart>
             </ResponsiveContainer>
+            </ErrorBoundary>
           </div>
         </div>
 
@@ -237,6 +240,7 @@ export default function Stats() {
           <h2 className="text-lg font-bold mb-6 text-gray-900">Cycle Status</h2>
           <div className="flex items-center justify-between h-64">
             <div className="w-1/2 h-full">
+              <ErrorBoundary>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -256,6 +260,7 @@ export default function Stats() {
                   />
                 </PieChart>
               </ResponsiveContainer>
+              </ErrorBoundary>
             </div>
             <div className="w-1/2 space-y-4 pl-4">
               {cycleData.map((entry, index) => (
@@ -331,6 +336,7 @@ export default function Stats() {
         <div className={`${cardClasses}`}>
           <h2 className="text-lg font-bold mb-6 text-gray-900">Trainer Clients</h2>
           <div className="h-64 w-full">
+            <ErrorBoundary>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={trainerChartData} layout="vertical" margin={{ top: 0, right: 20, left: 20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f3f4f6" />
@@ -343,6 +349,7 @@ export default function Stats() {
                 <Bar dataKey="count" fill="#ef4444" radius={[0, 4, 4, 0]} barSize={24} />
               </BarChart>
             </ResponsiveContainer>
+            </ErrorBoundary>
           </div>
         </div>
       )}
