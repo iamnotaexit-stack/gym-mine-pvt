@@ -38,7 +38,7 @@ export default function Stats() {
       const { data: paymentsData } = await supabase
         .from('payments')
         .select('*')
-        .gte('paid_on', `${currentMonthPrefix}-01`);
+        .like('paid_on', `${currentMonthPrefix}-%`);
         
       members = membersData || [];
       payments = paymentsData || [];
@@ -86,6 +86,7 @@ export default function Stats() {
     let revenueUPI = 0;
     let revenueCash = 0;
     const revenueThisMonth = payments.reduce((acc, p) => {
+      if (p.voided_at) return acc;
       const total = p.amount + p.trainer_fee;
       if (p.method === 'upi') revenueUPI += total;
       else if (p.method === 'cash') revenueCash += total;
@@ -98,6 +99,7 @@ export default function Stats() {
 
     // Sort overdue by days overdue (oldest date first)
     overdueList.sort((a, b) => a.current_due_date.localeCompare(b.current_due_date));
+    duesNext7Days.sort((a, b) => a.current_due_date.localeCompare(b.current_due_date));
 
     setStats({
       paid, unpaid, overdue, revenueThisMonth, revenueUPI, revenueCash, collectionRate,
