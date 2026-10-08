@@ -86,6 +86,14 @@ export default function MemberDetails() {
     window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
   };
 
+  const handleSendWelcome = () => {
+    if (!member) return;
+    const phone = member.phone.replace('+', '');
+    const loginUrl = window.location.origin;
+    const msg = encodeURIComponent(`Hi ${member.name}, welcome to Gym Addict 2.0!\n\nYou can view your membership, payments, and ID here:\n${loginUrl}\n\nSee you at the gym!`);
+    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+  };
+
   const handleVoidPayment = (paymentId: string) => {
     setVoidReason('');
     setVoidDrawer({ isOpen: true, paymentId });
@@ -159,6 +167,12 @@ export default function MemberDetails() {
           </div>
           
           <div className="pt-4 flex flex-col gap-3">
+            <button 
+              onClick={handleSendWelcome}
+              className="w-full bg-[#25D366] text-white px-4 py-3 sm:py-2 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-[#1fae53] min-h-[44px]"
+            >
+              <MessageCircle size={18} /> Send Login Link
+            </button>
             <button 
               onClick={handleWhatsApp}
               className="w-full bg-red-500 text-white px-4 py-3 sm:py-2 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-red-600 min-h-[44px]"

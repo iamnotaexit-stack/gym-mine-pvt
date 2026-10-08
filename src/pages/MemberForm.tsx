@@ -28,10 +28,6 @@ export default function MemberForm() {
   
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showQR, setShowQR] = useState(false);
-  const [groupUrl, setGroupUrl] = useState<string | null>(null);
-  const [createdName, setCreatedName] = useState('');
-
   // Initial Payment States (New Member Only)
   const [payAdmissionFee, setPayAdmissionFee] = useState(true);
   const [payPlanFee, setPayPlanFee] = useState(true);
@@ -167,95 +163,14 @@ export default function MemberForm() {
           }
         }
         
-        // Fetch URL for QR
-        const { data: settings } = await supabase.from('settings').select('group_url_general, group_url_trainer').single();
-        const url = payload.has_trainer ? settings?.group_url_trainer : settings?.group_url_general;
-        setGroupUrl(url || null);
-
-        setCreatedName(form.name);
-        setShowQR(true);
-      } else {
+        toast.success('Member created successfully!');
+        navigate(`/members/${newMemberId}`);
+      } else if (error) {
         toast.error(error?.message || 'Error creating member');
       }
       setLoading(false);
     }
   };
-
-  if (showQR) {
-    const QRCode = React.lazy(() => import('qrcode.react').then(m => ({ default: m.QRCodeSVG })));
-    
-    const handleSendWelcome = () => {
-      const phone = form.phone.replace('+', '');
-      const loginUrl = window.location.origin + '/#/login';
-      const msg = encodeURIComponent(`Hi ${createdName}, welcome to Gym Addict 2.0!\n\nYou can view your membership, payments, and ID here:\n${loginUrl}\n\nSee you at the gym!`);
-      window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
-    };
-
-    const handleDownloadQR = () => {
-      const svg = document.getElementById("group-qr-code");
-      if (!svg) return;
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      const img = new Image();
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx?.drawImage(img, 0, 0);
-        const a = document.createElement("a");
-        a.download = "Gym Addict 2.0-Group-QR.png";
-        a.href = canvas.toDataURL("image/png");
-        a.click();
-      };
-      img.src = "data:image/svg+xml;base64," + btoa(svgData);
-    };
-
-    return (
-      <div className="bg-white p-8 rounded-lg shadow-2xl border-t-4 border-t-red-600 text-center max-w-sm mx-auto mt-12 animate-in fade-in zoom-in-95 duration-300">
-        <h2 className="text-3xl font-black text-gray-900 mb-2 uppercase tracking-tight">Success</h2>
-        <p className="text-gray-900 mb-8 font-medium"><strong>{createdName}</strong> is now a member.</p>
-        
-        <div className="space-y-4 mb-8">
-          <button 
-            onClick={handleSendWelcome}
-            className="w-full bg-[#25D366] text-white py-3 px-4 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-[#1fae53] transition-colors shadow-md"
-          >
-            <MessageCircle size={20} /> Send Login via WhatsApp
-          </button>
-        </div>
-
-        <div className="border-t border-gray-200 pt-8 mb-8">
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Community Invite</h3>
-          {groupUrl ? (
-            <div className="flex flex-col items-center">
-              <div className="bg-white p-2 rounded-lg shadow-sm border border-gray-200 mb-4">
-                <React.Suspense fallback={<div className="w-32 h-32 bg-gray-100 animate-pulse rounded"></div>}>
-                  <QRCode id="group-qr-code" value={groupUrl} size={128} level="H" />
-                </React.Suspense>
-              </div>
-              <button 
-                onClick={handleDownloadQR}
-                className="text-red-600 font-bold hover:text-red-700 transition-colors text-sm flex items-center justify-center gap-1"
-              >
-                <Download size={16} /> Save QR
-              </button>
-            </div>
-          ) : (
-            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-              No WhatsApp Group Configured
-            </div>
-          )}
-        </div>
-        
-        <button 
-          onClick={() => navigate('/')}
-          className="w-full bg-gray-900 text-white py-3 rounded-lg font-bold hover:bg-black transition-colors uppercase tracking-wider text-sm shadow-md"
-        >
-          Return to Dashboard
-        </button>
-      </div>
-    );
-  }
 
   const selectedPlanPrice = plans.find(p => p.id === form.plan_id)?.price || 0;
 
