@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Calendar, CreditCard, Smartphone, MapPin, Globe, Sparkles } from 'lucide-react';
+import { Calendar, CreditCard, Smartphone, MapPin, Globe, Sparkles, LogOut } from 'lucide-react';
 import { computeMemberStatus } from '../lib/dates';
 import type { Member, Payment } from '../types';
 import type { Language } from '../lib/translations';
@@ -9,7 +9,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export default function MemberDashboard() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { t, regionInfo, language, setLanguage } = useLanguage();
   const [member, setMember] = useState<Member | null>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -127,16 +127,31 @@ export default function MemberDashboard() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto pb-24 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-gray-900 uppercase tracking-tight">{t('member_portal')}</h1>
-          <div className="flex items-center gap-1.5 text-xs text-red-700 font-medium mt-1">
-            <MapPin size={13} className="text-red-600" />
+    <div className="max-w-3xl mx-auto pb-24 space-y-6 pt-4 px-4 sm:px-0">
+      <div className="bg-red-700 text-white p-5 rounded-2xl shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative overflow-hidden">
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-1">
+            <h1 className="text-2xl font-black uppercase tracking-tight">{t('member_portal')}</h1>
+            <span className="bg-red-900/40 text-red-100 text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full">
+              Personal
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-red-200 font-medium">
+            <MapPin size={13} className="text-red-300" />
             <span>{regionInfo.city}, {regionInfo.state}</span>
           </div>
         </div>
-        </div>
+        
+        <button 
+          onClick={signOut}
+          className="relative z-10 flex items-center gap-2 bg-red-800/50 hover:bg-red-800 px-4 py-2 rounded-xl transition-colors text-sm font-bold shadow-sm"
+        >
+          <LogOut size={16} /> {t('nav_logout')}
+        </button>
+        
+        {/* Decorative background elements */}
+        <div className="absolute right-0 top-0 w-48 h-48 bg-red-600 rounded-full blur-3xl opacity-50 translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
+      </div>
 
       {/* Local Guwahati Greeting Banner */}
       <div className="bg-gradient-to-r from-red-600 to-orange-600 text-white p-4 rounded-xl shadow-sm flex items-center justify-between">

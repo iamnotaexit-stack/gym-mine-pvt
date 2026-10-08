@@ -20,15 +20,7 @@ const ChaseList = React.lazy(() => import('./pages/ChaseList'));
 const Stats = React.lazy(() => import('./pages/Stats'));
 const ActivityLog = React.lazy(() => import('./pages/ActivityLog'));
 
-function ProtectedRoute({ children, requireOwner = false }: { children: React.ReactNode, requireOwner?: boolean }) {
-  const { user, role, loading } = useAuth();
 
-  if (loading) return <div className="p-8 text-center">Loading...</div>;
-  if (!user) return <Navigate to="/login" />;
-  if (requireOwner && role !== 'owner') return <Navigate to="/" />;
-
-  return <>{children}</>;
-}
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { signOut, role } = useAuth();
@@ -87,7 +79,9 @@ function Layout({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="flex sm:flex-col items-center sm:items-start gap-4 sm:gap-2 sm:mt-auto">
-          <div className="text-xs opacity-80 uppercase font-semibold tracking-wider">{roleLabel}</div>
+          <div className={`text-[10px] sm:text-xs uppercase font-bold tracking-widest px-2.5 py-1 rounded-full ${role === 'owner' ? 'bg-red-900/30 text-red-100' : 'bg-orange-500 text-white shadow-sm'}`}>
+            {role === 'owner' ? 'Owner Portal' : 'Subadmin Portal'}
+          </div>
           <button onClick={signOut} className="p-2 sm:px-3 sm:py-2 sm:w-full flex items-center justify-center sm:justify-start gap-2 hover:bg-red-600 rounded-full sm:rounded-lg transition-colors text-red-50">
             <LogOut size={20} /> <span className="hidden md:inline font-medium">{t('nav_logout')}</span>
           </button>
@@ -234,6 +228,22 @@ function Login() {
 
 const MemberDashboard = React.lazy(() => import('./pages/MemberDashboard'));
 
+function AuthenticatedRoute({ children, requireOwner = false }: { children: React.ReactNode, requireOwner?: boolean }) {
+  const { role, user, loading } = useAuth();
+  
+  if (loading) return <div className="p-8 text-center text-gray-500">Loading...</div>;
+  if (!user) return <Navigate to="/login" />;
+  if (requireOwner && role !== 'owner') return <Navigate to="/" />;
+
+  // Member gets their own standalone layout in MemberDashboard
+  if (role === 'member') {
+    return <>{children}</>;
+  }
+
+  // Owner and Subadmin get the full side/bottom navigation Layout
+  return <Layout>{children}</Layout>;
+}
+
 function RootRoute() {
   const { role } = useAuth();
   if (role === 'member') return <MemberDashboard />;
@@ -243,9 +253,6 @@ function RootRoute() {
 import { ErrorBoundary } from './ErrorBoundary';
 
 function App() {
-  // HashRouter conflicts with Supabase magic links because both use the URL hash.
-  // We must delay rendering the HashRouter if the URL contains an access token,
-  // otherwise HashRouter will wipe the token before Supabase can process it.
   const [isProcessingToken, setIsProcessingToken] = useState(
     () => window.location.hash.includes('access_token=')
   );
@@ -254,13 +261,11 @@ function App() {
     if (isProcessingToken) {
       const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
         if (event === 'SIGNED_IN' || event === 'PASSWORD_RECOVERY' || event === 'USER_UPDATED') {
-          // Once Supabase processes the token, clear the hash and render the app
           window.location.hash = '/';
           setIsProcessingToken(false);
         }
       });
       
-      // Fallback timeout in case the token is invalid or expired
       const timer = setTimeout(() => {
         window.location.hash = '/login';
         setIsProcessingToken(false);
@@ -285,17 +290,17 @@ function App() {
           <Router>
             <Routes>
               <Route path="/login" element={<Login />} />
-              <Route path="/" element={<ProtectedRoute><Layout><RootRoute /></Layout></ProtectedRoute>} />
-              <Route path="/members/add" element={<ProtectedRoute><Layout><MemberForm /></Layout></ProtectedRoute>} />
-              <Route path="/members/:id" element={<ProtectedRoute><Layout><MemberDetails /></Layout></ProtectedRoute>} />
-              <Route path="/members/:id/edit" element={<ProtectedRoute><Layout><MemberForm /></Layout></ProtectedRoute>} />
-              <Route path="/payments/add/:memberId" element={<ProtectedRoute requireOwner><Layout><PaymentForm /></Layout></ProtectedRoute>} />
-              <Route path="/receipt/:id" element={<ProtectedRoute><Layout><Receipt /></Layout></ProtectedRoute>} />
-              <Route path="/chase" element={<ProtectedRoute><Layout><ChaseList /></Layout></ProtectedRoute>} />
-              <Route path="/stats" element={<ProtectedRoute requireOwner><Layout><Stats /></Layout></ProtectedRoute>} />
-              <Route path="/trash" element={<ProtectedRoute requireOwner><Layout><Trash /></Layout></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute requireOwner><Layout><Settings /></Layout></ProtectedRoute>} />
-              <Route path="/activity" element={<ProtectedRoute requireOwner><Layout><ActivityLog /></Layout></ProtectedRoute>} />
+              <Route path="/" element={<AuthenticatedRoute><RootRoute /></AuthenticatedRoute>} />
+              <Route path="/members/add" element={<AuthenticatedRoute><MemberForm /></AuthenticatedRoute>} />
+              <Route path="/members/:id" element={<AuthenticatedRoute><MemberDetails /></AuthenticatedRoute>} />
+              <Route path="/members/:id/edit" element={<AuthenticatedRoute><MemberForm /></AuthenticatedRoute>} />
+              <Route path="/payments/add/:memberId" element={<AuthenticatedRoute requireOwner><PaymentForm /></AuthenticatedRoute>} />
+              <Route path="/receipt/:id" element={<AuthenticatedRoute><Receipt /></AuthenticatedRoute>} />
+              <Route path="/chase" element={<AuthenticatedRoute><ChaseList /></AuthenticatedRoute>} />
+              <Route path="/stats" element={<AuthenticatedRoute requireOwner><Stats /></AuthenticatedRoute>} />
+              <Route path="/trash" element={<AuthenticatedRoute requireOwner><Trash /></AuthenticatedRoute>} />
+              <Route path="/settings" element={<AuthenticatedRoute requireOwner><Settings /></AuthenticatedRoute>} />
+              <Route path="/activity" element={<AuthenticatedRoute requireOwner><ActivityLog /></AuthenticatedRoute>} />
             </Routes>
           </Router>
         </AuthProvider>
