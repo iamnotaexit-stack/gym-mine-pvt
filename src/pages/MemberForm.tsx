@@ -4,10 +4,11 @@ import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Plan } from '../types';
-import { ArrowLeft, Save, MessageCircle, Download } from 'lucide-react';
+import { ArrowLeft, Save } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { calculateNextDueDate } from '../lib/dates';
 import { useAuth } from '../contexts/AuthContext';
+import SuccessModal from '../components/SuccessModal';
 
 export default function MemberForm() {
   const { id } = useParams();
@@ -28,6 +29,11 @@ export default function MemberForm() {
   
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(false);
+  
+  // Success Modal State
+  const [showModal, setShowModal] = useState(false);
+  const [createdMember, setCreatedMember] = useState<{id: string, name: string, phone: string, groupUrl: string | null} | null>(null);
+
   // Initial Payment States (New Member Only)
   const [payAdmissionFee, setPayAdmissionFee] = useState(true);
   const [payPlanFee, setPayPlanFee] = useState(true);
@@ -152,6 +158,10 @@ export default function MemberForm() {
       }
 
       if (!error && newMemberId) {
+        // Fetch URL for QR
+        const { data: settings } = await supabase.from('settings').select('group_url_general, group_url_trainer').single();
+        const url = payload.has_trainer ? settings?.group_url_trainer : settings?.group_url_general;
+
         // If email exists, invite them via Edge Function
         if (payload.email) {
           try {
@@ -163,8 +173,13 @@ export default function MemberForm() {
           }
         }
         
-        toast.success('Member created successfully!');
-        navigate(`/members/${newMemberId}`);
+        setCreatedMember({
+          id: newMemberId,
+          name: payload.name,
+          phone: payload.phone,
+          groupUrl: url || null
+        });
+        setShowModal(true);
       } else if (error) {
         toast.error(error?.message || 'Error creating member');
       }
@@ -345,6 +360,23 @@ export default function MemberForm() {
           </button>
         </div>
       </form>
+
+      {createdMember && (
+        <SuccessModal 
+          isOpen={showModal}
+          onClose={() => {
+            setShowModal(false);
+            navigate('/');
+          }}
+          onGoToProfile={() => {
+            setShowModal(false);
+            navigate(`/members/${createdMember.id}`);
+          }}
+          memberName={createdMember.name}
+          memberPhone={createdMember.phone}
+          groupUrl={createdMember.groupUrl}
+        />
+      )}
     </div>
   );
 }
