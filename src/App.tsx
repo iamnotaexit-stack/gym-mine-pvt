@@ -243,6 +243,40 @@ function RootRoute() {
 import { ErrorBoundary } from './ErrorBoundary';
 
 function App() {
+  // HashRouter conflicts with Supabase magic links because both use the URL hash.
+  // We must delay rendering the HashRouter if the URL contains an access token,
+  // otherwise HashRouter will wipe the token before Supabase can process it.
+  const [isProcessingToken, setIsProcessingToken] = useState(
+    () => window.location.hash.includes('access_token=')
+  );
+
+  React.useEffect(() => {
+    if (isProcessingToken) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+        if (event === 'SIGNED_IN' || event === 'PASSWORD_RECOVERY' || event === 'USER_UPDATED') {
+          // Once Supabase processes the token, clear the hash and render the app
+          window.location.hash = '/';
+          setIsProcessingToken(false);
+        }
+      });
+      
+      // Fallback timeout in case the token is invalid or expired
+      const timer = setTimeout(() => {
+        window.location.hash = '/login';
+        setIsProcessingToken(false);
+      }, 3000);
+      
+      return () => {
+        subscription.unsubscribe();
+        clearTimeout(timer);
+      };
+    }
+  }, [isProcessingToken]);
+
+  if (isProcessingToken) {
+    return <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-500">Authenticating magic link...</div>;
+  }
+
   return (
     <ErrorBoundary>
       <LanguageProvider>
