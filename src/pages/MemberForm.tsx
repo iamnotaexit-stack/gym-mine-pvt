@@ -227,8 +227,9 @@ export default function MemberForm() {
           </div>
 
           <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">Email (Optional)</label>
+            <label className="block text-sm font-medium text-gray-700">Email *</label>
             <input 
+              required
               type="email" 
               value={form.email} 
               onChange={e => setForm({...form, email: e.target.value})}
