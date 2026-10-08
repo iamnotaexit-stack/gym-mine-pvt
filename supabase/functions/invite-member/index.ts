@@ -23,9 +23,13 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // 1. Send Magic Invite Link
-    const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
-      redirectTo: redirectTo || undefined
+    // 1. Generate Magic Invite Link (does not auto-send email, returns the link)
+    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+      type: 'invite',
+      email: email,
+      options: {
+        redirectTo: redirectTo || undefined
+      }
     })
     
     if (error) {
@@ -33,6 +37,7 @@ serve(async (req) => {
     }
 
     const userId = data.user.id
+    const actionLink = data.properties.action_link
 
     // 2. Insert Profile as 'member'
     const { error: profileError } = await supabaseAdmin
@@ -45,7 +50,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ message: "Invite sent successfully", user: data.user }),
+      JSON.stringify({ message: "Link generated successfully", user: data.user, actionLink }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )
   } catch (error) {

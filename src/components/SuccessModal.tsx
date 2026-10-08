@@ -9,10 +9,12 @@ interface SuccessModalProps {
   memberName: string;
   memberPhone: string;
   groupUrl: string | null;
+  magicLink?: string | null;
 }
 
-export default function SuccessModal({ isOpen, onClose, onGoToProfile, memberName, memberPhone, groupUrl }: SuccessModalProps) {
-  const defaultMsg = `Hi ${memberName}, welcome to Gym Addict 2.0!\n\nYou can view your membership details and receipt here:\n${window.location.origin}\n\nSee you at the gym!`;
+export default function SuccessModal({ isOpen, onClose, onGoToProfile, memberName, memberPhone, groupUrl, magicLink }: SuccessModalProps) {
+  const linkToUse = magicLink || window.location.origin;
+  const defaultMsg = `Hi ${memberName}, welcome to Gym Addict 2.0!\n\nYou can view your membership details and receipt here:\n${linkToUse}\n\nSee you at the gym!`;
   const [message, setMessage] = useState(defaultMsg);
   const [showQR, setShowQR] = useState(false);
 

@@ -32,7 +32,7 @@ export default function MemberForm() {
   
   // Success Modal State
   const [showModal, setShowModal] = useState(false);
-  const [createdMember, setCreatedMember] = useState<{id: string, name: string, phone: string, groupUrl: string | null} | null>(null);
+  const [createdMember, setCreatedMember] = useState<{id: string, name: string, phone: string, groupUrl: string | null, magicLink?: string | null} | null>(null);
 
   // Initial Payment States (New Member Only)
   const [payAdmissionFee, setPayAdmissionFee] = useState(true);
@@ -162,12 +162,15 @@ export default function MemberForm() {
         const { data: settings } = await supabase.from('settings').select('group_url_general, group_url_trainer').single();
         const url = payload.has_trainer ? settings?.group_url_trainer : settings?.group_url_general;
 
-        // If email exists, invite them via Edge Function
+        let generatedMagicLink = null;
         if (payload.email) {
           try {
-            await supabase.functions.invoke('invite-member', {
+            const { data: inviteData } = await supabase.functions.invoke('invite-member', {
               body: { email: payload.email, name: payload.name, redirectTo: window.location.origin }
             });
+            if (inviteData?.actionLink) {
+              generatedMagicLink = inviteData.actionLink;
+            }
           } catch (err) {
             console.error("Failed to invoke invite-member function", err);
           }
@@ -177,7 +180,8 @@ export default function MemberForm() {
           id: newMemberId,
           name: payload.name,
           phone: payload.phone,
-          groupUrl: url || null
+          groupUrl: url || null,
+          magicLink: generatedMagicLink
         });
         setShowModal(true);
       } else if (error) {
@@ -375,6 +379,7 @@ export default function MemberForm() {
           memberName={createdMember.name}
           memberPhone={createdMember.phone}
           groupUrl={createdMember.groupUrl}
+          magicLink={createdMember.magicLink}
         />
       )}
     </div>
