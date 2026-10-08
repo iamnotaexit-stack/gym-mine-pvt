@@ -86,7 +86,7 @@ export default function MemberForm() {
     
     // If logging plan fee, calculate the real next due date, else they are due immediately
     let current_due_date = form.join_date;
-    if (!isEditing && role === 'owner' && payPlanFee && selectedPlan) {
+    if (!isEditing && payPlanFee && selectedPlan) {
        current_due_date = calculateNextDueDate(anchor_day, form.join_date, selectedPlan.months);
     }
 
@@ -115,7 +115,7 @@ export default function MemberForm() {
 
       let totalAmount = 0;
       let notes = [];
-      const willPay = role === 'owner' && (payAdmissionFee || payPlanFee) && selectedPlan;
+      const willPay = (payAdmissionFee || payPlanFee) && selectedPlan;
       if (willPay) {
         if (payAdmissionFee) {
           totalAmount += globalAdmissionFee;
@@ -127,25 +127,33 @@ export default function MemberForm() {
         }
       }
 
-      const { data: newMemberId, error } = await supabase.rpc('create_member_with_payment', {
-        p_id: null,
-        p_name: payload.name,
-        p_phone: payload.phone,
-        p_email: payload.email,
-        p_join_date: payload.join_date,
-        p_anchor_day: payload.anchor_day,
-        p_plan_id: payload.plan_id,
-        p_has_trainer: payload.has_trainer,
-        p_trainer_name: payload.trainer_name,
-        
-        p_pay_amount: willPay ? totalAmount : 0,
-        p_pay_method: 'cash',
-        p_pay_covers_from: form.join_date,
-        p_pay_covers_to: current_due_date,
-        p_idempotency: crypto.randomUUID(),
-        
-        p_actor_id: actorId
-      });
+      const { data: newMember, error: memberError } = await supabase.from('members').insert(payload).select().single();
+
+      let error = memberError;
+      let newMemberId = newMember?.id;
+
+      if (!error && newMemberId) {
+        if (willPay && totalAmount > 0) {
+          const { error: payError } = await supabase.from('payments').insert({
+            member_id: newMemberId,
+            amount: totalAmount,
+            method: 'cash',
+            paid_on: form.join_date,
+            covers_from: form.join_date,
+            covers_to: current_due_date,
+            idempotency_key: crypto.randomUUID()
+          });
+          if (payError) console.error("Payment insert error:", payError);
+        }
+
+        await supabase.from('audit_log').insert({
+          actor: actorId,
+          action: 'create_member',
+          entity: 'members',
+          entity_id: newMemberId,
+          meta: { name: payload.name, transactional: false }
+        });
+      }
 
       if (!error && newMemberId) {
         // If email exists, invite them via Edge Function
@@ -327,7 +335,7 @@ export default function MemberForm() {
             )}
           </div>
 
-          {!isEditing && role === 'owner' && plans.length > 0 && (
+          {!isEditing && plans.length > 0 && (
             <div className="sm:col-span-2 bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4">
               <h3 className="font-bold text-gray-900 text-sm mb-2">Initial Payments (Optional)</h3>
               
